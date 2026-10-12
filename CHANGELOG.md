@@ -3,6 +3,8 @@
 All notable changes to Solventius Harness. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any release may change behaviour.
 
+## [Unreleased]
+
 ## [0.2.0] - 2026-10-12
 
 First public demo build.
