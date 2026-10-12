@@ -50,30 +50,30 @@ Start `slvh` once. It creates `settings.json` next to the program. Close it with
 
 ### Web search (optional)
 
-The `web_search` tool lets the model search the web. It needs a search server you can reach, either
-[SearXNG](https://docs.searxng.org) or [4get](https://git.lolcat.ca/lolcat/4get). Add it to `settings.json`:
+The `web_search` tool lets the model search the web. It needs a search server you can reach. **Recommended: 4get**, a lightweight
+open-source meta search engine (repository: https://git.lolcat.ca/lolcat/4get); [SearXNG](https://docs.searxng.org) also works. Add it to `settings.json`:
 
 ```json
 {
   "search_providers": [
-    { "id": "searXNG", "endpoint": "http://localhost:8888" },
-    { "id": "4get", "endpoint": "http://localhost:8080" }
+    { "id": "4get", "endpoint": "http://localhost:8081" }
   ],
-  "active_search_provider": "searXNG"
+  "active_search_provider": "4get"
 }
 ```
 
-- `id`: `searXNG` or `4get` (not case-sensitive).
+- `id`: `4get` or `searXNG` (not case-sensitive). You can list both; `active_search_provider` picks one.
 - `endpoint`: the server address, **without** a trailing `/`.
-- `active_search_provider`: which entry to use. If it's missing or unknown, the first entry is used.
+- If `active_search_provider` is missing or unknown, the first entry is used.
 - Without `search_providers`, `web_search` returns an error.
 
-**Quick SearXNG with Docker:**
+**Quick 4get with Docker** (from the [4get Docker guide](https://git.lolcat.ca/lolcat/4get/src/branch/master/docs/docker.md)):
 
-1. `docker run -d --name searxng -p 8888:8080 searxng/searxng`
-2. Enable JSON output: in the container's `/etc/searxng/settings.yml`, under `search:` → `formats:`, add `- json` next to `- html`.
-3. `docker restart searxng`
-4. Check: `http://localhost:8888/search?q=test&format=json` in a browser returns JSON, not an error page.
+1. `docker run -d --name 4get -p 8081:80 -e FOURGET_SERVER_NAME="localhost" -e FOURGET_PROTO="http" luuul/4get:latest`
+2. Check: `http://localhost:8081/api/v1/web?s=test` in a browser returns JSON.
+
+**SearXNG instead:** use `"id": "searXNG"` and enable JSON output in its `settings.yml` (`search:` → `formats:` → add `- json`),
+otherwise every search fails.
 
 ## Run
 
@@ -100,6 +100,12 @@ Open a terminal **in the folder you want it to work in** and start `slvh`. Use a
 | `Auto` | run | run | run |
 | `Full` | run | run | run, and outside the workspace |
 
+### herdr support
+
+Supports [herdr](https://herdr.dev), a terminal multiplexer for coding agents. In a herdr pane the harness reports its
+state: **idle** while waiting for you, **working** while the model answers, **blocked** while it waits for you to allow
+a tool. Nothing to set up; outside herdr nothing changes.
+
 ## Tools
 
 | Tool | Does |
@@ -122,7 +128,7 @@ Put an `AGENTS.md` in the workspace to give the model project rules (build comma
 | Error after a long conversation | Context full: `/reset` |
 | `Permission denied` (Linux / macOS) | `chmod +x slvh` |
 | `error: no search provider available` | Add `search_providers` to `settings.json`, see [Web search](#web-search-optional) |
-| Web search returns an HTTP error | Server down, wrong `endpoint`, or SearXNG without `json` in `formats` |
+| Web search returns an HTTP error | Server down or wrong `endpoint`; for SearXNG, `json` missing in `formats` |
 
 ## Roadmap
 
