@@ -159,6 +159,11 @@ performance footprint, so CPU, memory and GPU stay free for the model.
 - **[Spectre.Console](https://spectreconsole.net)** for the terminal UI (MIT), the only dependency beyond .NET itself.
   Thanks to its authors.
 
+**How it's made:** the core (agent loop, tools, model communication, session modes, settings) is written by hand.
+AI is used as a helper, not a replacement: mainly Claude, and to a lesser extent Qwen 3.8, for planning and
+project management, code review, all unit tests and part of the manual testing, parts of the terminal UI code, the build
+and release scripts, and most of the documentation.
+
 Third-party licences: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 ## Licence
