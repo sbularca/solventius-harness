@@ -10,10 +10,6 @@ llama-swap, Ollama, LM Studio.
 
 **[Download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** · [Changelog](CHANGELOG.md)
 
-![Startup header, session modes, /help and the model reading a project](docs/tools.png)
-
-![The model editing several files, each change shown as a coloured diff](docs/edit-diff.png)
-
 ## Requirements
 
 - Windows x64, Linux x64, or macOS (arm64 / x64, untested). No .NET install needed.
@@ -170,3 +166,9 @@ Third-party licences: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 Copyright (c) 2026 Jovian Industries. All rights reserved. Demo licence: personal, non-commercial evaluation only.
 No copying, redistribution, modification or reverse engineering. Full terms in [LICENSE](LICENSE).
+
+## Screenshots
+
+![Startup header, session modes, /help and the model reading a project](docs/tools.png)
+
+![The model editing several files, each change shown as a coloured diff](docs/edit-diff.png)
