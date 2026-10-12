@@ -8,7 +8,7 @@ files in one folder you choose, and runs commands after you allow them.
 It does not include a model. It connects to any **OpenAI-compatible server** you run: llama.cpp `llama-server`,
 llama-swap, Ollama, LM Studio.
 
-**[Download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** · [Release notes](RELEASE_NOTES.md)
+**[Download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** · [Changelog](CHANGELOG.md)
 
 ## Requirements
 
@@ -94,6 +94,17 @@ Put an `AGENTS.md` in the workspace to give the model project rules (build comma
 | Only chats, never uses files | The model doesn't support tool calling |
 | Error after a long conversation | Context full: `/reset` |
 | `Permission denied` (Linux / macOS) | `chmod +x slvh` |
+
+## Built with
+
+Small and self-contained: one file of about 16–18 MB, no installer, no .NET install needed. It aims for a very low
+performance footprint, so CPU, memory and GPU stay free for the model.
+
+- **C# / .NET 10**, published as a trimmed single file with the runtime included.
+- **[Spectre.Console](https://spectreconsole.net)** for the terminal UI (MIT), the only dependency beyond .NET itself.
+  Thanks to its authors.
+
+Third-party licences: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 ## Licence
 
