@@ -10,6 +10,10 @@ llama-swap, Ollama, LM Studio.
 
 **[Download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** · [Changelog](CHANGELOG.md)
 
+![Startup header, session modes, /help and the model reading a project](docs/tools.png)
+
+![The model editing several files, each change shown as a coloured diff](docs/edit-diff.png)
+
 ## Requirements
 
 - Windows x64, Linux x64, or macOS (arm64 / x64, untested). No .NET install needed.
@@ -48,6 +52,33 @@ Start `slvh` once. It creates `settings.json` next to the program. Close it with
 - `id`: the model name your server expects.
 - `endpoint`: must start with `http://` and end with `/`.
 
+### Web search (optional)
+
+The `web_search` tool lets the model search the web. It needs a search server you can reach, either
+[SearXNG](https://docs.searxng.org) or [4get](https://git.lolcat.ca/lolcat/4get). Add it to `settings.json`:
+
+```json
+{
+  "search_providers": [
+    { "id": "searXNG", "endpoint": "http://localhost:8888" },
+    { "id": "4get", "endpoint": "http://localhost:8080" }
+  ],
+  "active_search_provider": "searXNG"
+}
+```
+
+- `id`: `searXNG` or `4get` (not case-sensitive).
+- `endpoint`: the server address, **without** a trailing `/`.
+- `active_search_provider`: which entry to use. If it's missing or unknown, the first entry is used.
+- Without `search_providers`, `web_search` returns an error.
+
+**Quick SearXNG with Docker:**
+
+1. `docker run -d --name searxng -p 8888:8080 searxng/searxng`
+2. Enable JSON output: in the container's `/etc/searxng/settings.yml`, under `search:` → `formats:`, add `- json` next to `- html`.
+3. `docker restart searxng`
+4. Check: `http://localhost:8888/search?q=test&format=json` in a browser returns JSON, not an error page.
+
 ## Run
 
 Open a terminal **in the folder you want it to work in** and start `slvh`. Use a folder you can afford to lose, or one under git.
@@ -81,7 +112,7 @@ Open a terminal **in the folder you want it to work in** and start `slvh`. Use a
 | `create_file`, `edit_file` | Create a new file, replace text in a file |
 | `delete_file_or_folder` | Delete (never the workspace itself) |
 | `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere, 120 s timeout |
-| `web_search` | Optional, needs a 4get or SearXNG instance |
+| `web_search` | Search the web; optional, needs a search server ([setup](#web-search-optional)) |
 
 Put an `AGENTS.md` in the workspace to give the model project rules (build commands, what not to touch).
 
@@ -94,6 +125,8 @@ Put an `AGENTS.md` in the workspace to give the model project rules (build comma
 | Only chats, never uses files | The model doesn't support tool calling |
 | Error after a long conversation | Context full: `/reset` |
 | `Permission denied` (Linux / macOS) | `chmod +x slvh` |
+| `error: no search provider available` | Add `search_providers` to `settings.json`, see [Web search](#web-search-optional) |
+| Web search returns an HTTP error | Server down, wrong `endpoint`, or SearXNG without `json` in `formats` |
 
 ## Built with
 
