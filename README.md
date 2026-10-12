@@ -128,6 +128,28 @@ Put an `AGENTS.md` in the workspace to give the model project rules (build comma
 | `error: no search provider available` | Add `search_providers` to `settings.json`, see [Web search](#web-search-optional) |
 | Web search returns an HTTP error | Server down, wrong `endpoint`, or SearXNG without `json` in `formats` |
 
+## Roadmap
+
+Planned, roughly in this order. No dates; plans change.
+
+**Next**
+
+- **Cloud models:** Gemini (free tier) and other OpenAI-compatible APIs with an API key, so you can start without a local model server.
+- **Long sessions:** automatic context management, so a long conversation keeps working instead of hitting the limit.
+- **Images:** `/image <file>` to show the model a picture (for models with vision).
+- **Smoother confirmations:** answer "always" for a tool once per session; safe read-only commands run without asking in `Auto`.
+- **Bigger files:** `read_file` reads large files in parts instead of all at once.
+- **Debuggable reports:** a session log file and `--version`.
+
+**Later**
+
+- **Extensions:** skills (`SKILL.md` instructions loaded on demand) and MCP servers as extra tools.
+- **Web:** `web_fetch` to read a page, web search without hosting your own search server.
+- **Setup:** detect model settings from the server; guided first-run setup with a bundled local model.
+- **Sessions:** save and resume a conversation; remember facts across sessions.
+- **Sub-agents:** hand a self-contained task to a fresh agent with its own context.
+- **Native builds:** compiled to native code for faster start-up and a smaller footprint.
+
 ## Built with
 
 Small and self-contained: one file of about 16–18 MB, no installer, no .NET install needed. It aims for a very low
