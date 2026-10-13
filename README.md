@@ -1,6 +1,6 @@
 # Solventius Harness
 
-> **Demo.** Free for personal, non-commercial evaluation only. No copying, no redistribution. See [LICENSE](LICENSE).
+> **Freeware.** Free to use, at home or at work. No selling, no modifying. See [LICENSE](LICENSE).
 
 Personal terminal agentic assistant for **local language models**. You chat with a model; it reads, searches, creates and edits
 files in one folder you choose, and runs commands after you allow them. Good for many things, but built with coding in mind.
@@ -174,8 +174,8 @@ Third-party licences: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 ## Licence
 
-Copyright (c) 2026 Jovian Industries. All rights reserved. Demo licence: personal, non-commercial evaluation only.
-No copying, redistribution, modification or reverse engineering (need to make code pretty first). Full terms in [LICENSE](LICENSE).
+Copyright (c) 2026 Jovian Industries. All rights reserved. Freeware: free to use for personal or business purposes.
+No selling, no modification. Share only the unchanged official zip, free of charge. Full terms in [LICENSE](LICENSE).
 
 ## Screenshots
 
