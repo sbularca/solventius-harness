@@ -81,7 +81,7 @@ otherwise every search fails.
 
 ## Run
 
-Open a terminal **in the folder you want it to work in** and start `slvh`. Use a folder you can afford to lose, or one under git.
+Open a terminal **in the folder you want it to work in**(your workspace) and start `slvh`. Ideally, create first a path on your environment variables. 
 
 | Command | Effect |
 |---|---|
