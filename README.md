@@ -175,7 +175,7 @@ Third-party licences: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 ## Licence
 
 Copyright (c) 2026 Jovian Industries. All rights reserved. Demo licence: personal, non-commercial evaluation only.
-No copying, redistribution, modification or reverse engineering. Full terms in [LICENSE](LICENSE).
+No copying, redistribution, modification or reverse engineering (need to make code pretty first). Full terms in [LICENSE](LICENSE).
 
 ## Screenshots
 
