@@ -6,7 +6,7 @@ Personal terminal agentic assistant for **local language models**. You chat with
 files in one folder you choose, and runs commands after you allow them. Good for many things, but built with coding in mind.
 
 What I started initially as a learning project for understanding agentic coding, ended up as a tool that I am using all the time. Inspiration came from 
-pi.dev, with the difference that I wanted a more specialized tools for game developemnt (might get there eventually). I might eventually release the 
+pi.dev, with the difference that I wanted a more specialized tools for game developemnt (might get there eventually). I think I will eventually release the 
 source code, but for now I just wanted a place for releases.
 
 It does not include a model. It connects to any **OpenAI-compatible server** you run: llama.cpp `llama-server`,
