@@ -2,8 +2,11 @@
 
 > **Demo.** Free for personal, non-commercial evaluation only. No copying, no redistribution. See [LICENSE](LICENSE).
 
-A terminal coding assistant for **local language models**. You chat with a model; it reads, searches, creates and edits
-files in one folder you choose, and runs commands after you allow them.
+Personal terminal agentic assistant for **local language models**. You chat with a model; it reads, searches, creates and edits
+files in one folder you choose, and runs commands after you allow them. Good for many things, but built with coding in mind.
+
+What I started initially as a learning project for understanding agentic coding, ended up as a tool that I am using all the time. Inspiration came from 
+pi.dev, with the difference that I wanted more specialized tools for game developemnt (might get there eventually).
 
 It does not include a model. It connects to any **OpenAI-compatible server** you run: llama.cpp `llama-server`,
 llama-swap, Ollama, LM Studio.
