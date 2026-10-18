@@ -5,6 +5,41 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-19
+
+### Added
+- **Gemini and Claude (Anthropic) models:** add them as `backends` with an `api_key_env`; their models show up in `/model` with the right context size, and `/thinking` sets their thinking effort. Claude uses its own API (prompt caching on), Gemini its OpenAI-compatible one. Not yet: retry when a free-tier limit is hit.
+- `/cost` command: tokens used this session per model, and the provider's cost page (Claude Console, Google AI Studio) opened in your browser.
+- Global instructions: an `AGENTS.md` in the `.slvh` folder next to the harness applies to every project. The project `AGENTS.md` still wins when they disagree.
+- **Backends:** list your model servers under `backends` in `settings.json`; the harness detects the server type (llama-swap, llama.cpp, Ollama, vLLM, NInfer) and lists its models in `/model`, with the context size read from the server. `user_models` is now optional and only overrides values or adds models no server lists.
+- `/thinking` command: turn a model's thinking on or off, or set its thinking level (for example `low` or `xhigh`). The choice is saved per model.
+
+### Changed
+- The input prompt shows where your message goes, e.g. `Edit · home (LlamaSwap) >>`; `/model` shows the current model below the list.
+- `/thinking` knows the valid levels of Claude (from the API) and Gemini models, lists them, and refuses a level the model does not have. `/thinking off` on a Claude model that always thinks no longer fails every message: one warning, then the model's default.
+- `read_file` returns at most about an eighth of the model's context (4,000–60,000 characters) and says where to read on (`start_line`), so one big file no longer fills a small context.
+- On models with 32k context or less, `grep` shows 40 matches instead of 80 and `run_shell` 4,000 characters instead of 8,000.
+- The `AGENTS.md` budget is now about 10% of the context, at most 40,000 characters (it was about half the context, which on 1M-token cloud models meant up to 2M characters in every request).
+- `/model` now remembers your pick: the next start uses the last model you picked. If that model is not available at start (server down), you get a warning and the saved choice is kept.
+- **`settings.json` moved into the `.slvh` folder next to the harness program** (`<folder>/.slvh/settings.json`). A `settings.json` next to the program is no longer read: move your file into `.slvh` by hand, otherwise a new default file is created there.
+- **The harness folder is now `.slvh` instead of `.harness`.** Long shell output is saved in `.slvh/temp/` in the workspace. You can delete the old `.harness` folder.
+- `settings.json` has a new layout: your settings go under `user_settings`, and the model list is now `user_models`. An old-style file is renamed to `settings.json.old` and a new default file is created; copy your models and options from the old file into the new one.
+
+### Fixed
+- An API key set for a local model server was also sent to the web search server; tools now use their own connection without it.
+- A backend or model address without `http://` (e.g. `localhost:8080`) crashed the start; it is now skipped with a warning.
+- Warnings found at start (missing API key variable, server not answering, …) were wiped by the screen clear; they now show after it.
+- The stats line after an answer now shows prompt, cached and context use for cloud models (Claude, Gemini) and for local servers that send no llama.cpp timings (vLLM, Ollama); it is read from the token counts the server returns.
+- herdr: a harness restarted in the same pane shows up in the agents list again (its state reports were ignored after the first run).
+- The app starts even when `settings.json` has no models; it shows an error instead of closing.
+- A default model that isn't in the model list, or a model with a broken endpoint, shows an error instead of crashing on the first message.
+
+## [0.2.1] - 2026-10-13
+
+### Changed
+
+- Licence is now freeware: free to use at home or at work, share the unchanged zip for free. No selling, no modifying. The new `LICENSE` is in every zip.
+
 ## [0.2.0] - 2026-10-12
 
 First public demo build.
@@ -33,3 +68,5 @@ First public demo build.
 - macOS builds are untested.
 
 [0.2.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.2.0
+[0.2.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.2.1
+[0.3.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.3.0
