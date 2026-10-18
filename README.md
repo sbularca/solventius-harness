@@ -9,61 +9,152 @@ What I started initially as a learning project for understanding agentic coding,
 pi.dev, with the difference that I wanted a more specialized tools for game developemnt (might get there eventually). I think I will eventually release the 
 source code, but for now I just wanted a place for releases.
 
-It does not include a model. It connects to any **OpenAI-compatible server** you run: llama.cpp `llama-server`,
-llama-swap, Ollama, LM Studio.
+It does not include a model. It connects to the model servers you run — llama.cpp `llama-server`, llama-swap, Ollama,
+vLLM, LM Studio or any other **OpenAI-compatible server** — and, with an API key, to **Claude** (Anthropic) and **Gemini**
+(Google). It finds out which server runs behind an address, lists its models and reads their context size, so you
+mostly just give it the address.
 
 **[Download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** · [Changelog](CHANGELOG.md)
 
 ## Requirements
 
 - Windows x64, Linux x64, or macOS (arm64 / x64, untested). No .NET install needed.
-- A model server with an OpenAI-compatible API. The model should support **tool calling**; others can only chat.
+- At least one of:
+  - A local model server with an OpenAI-compatible API. The model should support **tool calling**; others can only chat.
+  - An API key for Claude ([Claude Console](https://platform.claude.com)) or Gemini ([Google AI Studio](https://aistudio.google.com/apikey)).
 
-| Server | Endpoint |
+| Server | Address (`endpoint`) |
 |---|---|
 | llama.cpp `llama-server` | `http://localhost:8080/` |
+| llama-swap | `http://localhost:8080/` (or the port you configured) |
 | Ollama | `http://localhost:11434/` |
 | LM Studio | `http://localhost:1234/` |
+| Gemini | `https://generativelanguage.googleapis.com/v1beta/openai/` |
+| Claude | `https://api.anthropic.com/` |
 
 ## Install
 
-1. Download the zip for your system from the [releases page](https://github.com/sbularca/solventius-harness/releases/latest) and unzip it.
+1. Download the zip for your system from the [releases page](https://github.com/sbularca/solventius-harness/releases/latest) and unzip it into a folder, e.g. `C:\slvh` or `~/slvh`.
 2. Linux / macOS: `chmod +x slvh`. macOS, if blocked: `xattr -d com.apple.quarantine slvh`.
 3. Check it works: `slvh --selftest`. Every line must say `PASS` or `SKIP`.
 
+### Run it from any folder (PATH)
+
+The folder you are in when you type `slvh` to start it becomes the workspace. Add the harness folder to `PATH` once,
+then type `slvh` inside any project. Add the **folder** — don't copy or link the program elsewhere: its settings are read
+from the `.slvh` folder next to the real program. Change `C:\slvh` / `~/slvh` below to your folder.
+
+**Windows** — Start menu → *Edit environment variables for your account* → select **Path** → **Edit…** → **New** →
+`C:\slvh` → OK. Or in PowerShell:
+
+```powershell
+$dir = "C:\slvh"
+$path = [Environment]::GetEnvironmentVariable("Path", "User")
+if (($path -split ";") -notcontains $dir) { [Environment]::SetEnvironmentVariable("Path", "$path;$dir", "User") }
+```
+
+**Linux** (bash; for zsh use `~/.zshrc`): `echo 'export PATH="$HOME/slvh:$PATH"' >> ~/.bashrc`
+
+**macOS** (zsh): `echo 'export PATH="$HOME/slvh:$PATH"' >> ~/.zshrc`
+
+**Open a new terminal**, go to a project folder and run `slvh --help` to check.
+
 ## Configure
 
-Start `slvh` once. It creates `settings.json` next to the program. Close it with `/exit`, then edit it:
+Start `slvh` once. It creates `.slvh/settings.json` **in the folder next to the program** (e.g. `C:\slvh\.slvh\settings.json`).
+Close it with `/exit`, then edit it. Your settings go under `user_settings`; the `app_state` part is written by the app
+(the model you picked, `/thinking` choices) — leave it alone.
+
+**Upgrading from an older version?** A `settings.json` directly next to the program is no longer read: move it into the
+`.slvh` folder. A file in the old layout (keys at the top level, a `models` list) is renamed to `settings.json.old` and
+a new one is created — copy your values over into the layout below.
+
+### Model servers (`backends`)
+
+List the servers you use. At start the harness asks each one (5 seconds at most) which server it is and which models it
+has; they all show up in `/model`.
 
 ```json
 {
-  "default_model": "my-model",
-  "models": [
-    {
-      "id": "my-model",
-      "endpoint": "http://localhost:8080/",
-      "context_size": 32768,
-      "max_tokens": 8192
-    }
-  ]
+  "user_settings": {
+    "backends": [
+      { "id": "home", "endpoint": "http://localhost:8080/" },
+      { "id": "gemini", "endpoint": "https://generativelanguage.googleapis.com/v1beta/openai/", "api_key_env": "GEMINI_API_KEY" },
+      { "id": "claude", "endpoint": "https://api.anthropic.com/", "api_key_env": "ANTHROPIC_API_KEY" }
+    ]
+  }
 }
 ```
 
-- `id`: the model name your server expects.
-- `endpoint`: must start with `http://` and end with `/`.
+| Key | Meaning |
+|---|---|
+| `endpoint` | The server's root address, starting with `http://` or `https://` and ending with `/`. |
+| `id` | A name for the server, shown in `/model` and in the prompt. Optional. |
+| `type` | Optional, skips detection: `llama-swap`, `llama.cpp`, `ollama`, `vllm`, `ninfer`, `gemini`, `anthropic` or `generic`. |
+| `api_key_env` | The **name** of the environment variable that holds the API key — never the key itself (see below). |
+
+**Privacy and cost:** with Claude or Gemini, your prompts and the files the assistant reads are sent to that provider. On
+Gemini's free tier Google may use them to improve its products — use a test project, not private code. Cloud requests
+cost money (except Gemini's free tier); `/cost` shows what you used.
+
+### API keys
+
+Put each key in an environment variable and write the variable's name in `api_key_env`. The steps below type the key
+at a hidden prompt, so it does not land in your shell history. Repeat for each key (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`),
+then **open a new terminal** — one that was already open does not see the new variable.
+
+**Windows** — Start menu → *Edit environment variables for your account* → **New…** → name `GEMINI_API_KEY`, value: your
+key → OK. Or in PowerShell 7:
+
+```powershell
+$key = Read-Host "Gemini key" -MaskInput
+[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", $key, "User")
+Remove-Variable key
+```
+
+**Linux** (bash; for zsh use `~/.zshrc`):
+
+```bash
+read -rsp "Gemini key: " key && echo "export GEMINI_API_KEY='$key'" >> ~/.bashrc && unset key && chmod 600 ~/.bashrc
+```
+
+**macOS** (zsh):
+
+```zsh
+read -rs "key?Gemini key: " && echo "export GEMINI_API_KEY='$key'" >> ~/.zshrc && unset key && chmod 600 ~/.zshrc
+```
+
+On Linux and macOS the key is stored in plain text in that file, readable only by you — keep it out of dotfile
+repositories. Check it without printing the key (shows only its length): `$env:GEMINI_API_KEY.Length` (PowerShell) or
+`echo ${#GEMINI_API_KEY}` (bash/zsh).
+
+**Claude:** create the key **inside a workspace** in the Claude Console. A key that isn't tied to a workspace is refused.
+
+### Per-model settings (`user_models`, optional)
+
+Normally not needed: models and their context size come from the server. Use `user_models` to override a value for a
+model, or to add a model no server lists (give it its own `endpoint`):
+
+```json
+"user_models": [
+  { "id": "qwen3:8b", "context_size": 32768, "max_tokens": 8192 }
+]
+```
+
+- `context_size` wins over the server's value (you get a warning when they differ).
+- `max_tokens`: max tokens per answer, *including* the model's thinking; must be smaller than the context size.
 
 ### Web search (optional)
 
 The `web_search` tool lets the model search the web. It needs a search server you can reach. **Recommended: 4get**, a lightweight
-open-source meta search engine (repository: https://git.lolcat.ca/lolcat/4get); [SearXNG](https://docs.searxng.org) also works. Add it to `settings.json`:
+open-source meta search engine (repository: https://git.lolcat.ca/lolcat/4get); [SearXNG](https://docs.searxng.org) also works.
+Add it inside `user_settings`:
 
 ```json
-{
-  "search_providers": [
-    { "id": "4get", "endpoint": "http://localhost:8081" }
-  ],
-  "active_search_provider": "4get"
-}
+"search_providers": [
+  { "id": "4get", "endpoint": "http://localhost:8081" }
+],
+"active_search_provider": "4get"
 ```
 
 - `id`: `4get` or `searXNG` (not case-sensitive). You can list both; `active_search_provider` picks one.
@@ -81,15 +172,22 @@ otherwise every search fails.
 
 ## Run
 
-Open a terminal **in the folder you want it to work in**(your workspace) and start `slvh`. Ideally, create first a path on your environment variables. 
+Open a terminal **in the folder you want it to work in** (your workspace) and type `slvh`. Warnings found at start
+(a missing API key variable, a server that doesn't answer) show above the welcome box.
+
+The prompt shows the session mode and where your message goes, e.g. `Edit · home (LlamaSwap) >>`. After each answer a
+stats line shows the time, the tokens and how full the context is.
 
 | Command | Effect |
 |---|---|
 | `/help` | List all commands |
-| `/model` | List models; `/model <n>` switches |
+| `/model` | List all models, grouped by server; `/model <n>` or `/model <id>` switches. The pick is remembered for the next start. |
+| `/thinking` | Show the thinking setting of the current model and its levels |
+| `/thinking <on\|off\|level\|reset>` | Turn thinking on or off, or set its level (e.g. `low`, `medium`, `high`; Claude also `xhigh`, `max`). Saved per model; `reset` goes back to the model's default |
+| `/cost` | Tokens used this session per model, and the provider's cost page (opened in your browser) |
 | `/session-mode <mode>` | Change when it asks (see below) |
 | `/set-workspace <folder>` | Work in another folder |
-| `/reset` | Start a fresh conversation |
+| `/reset` or `/clear` | Start a fresh conversation |
 | `/exit` | Quit |
 
 **Ctrl+C** stops the current answer. **Ctrl+D** quits (asks first).
@@ -104,6 +202,12 @@ Open a terminal **in the folder you want it to work in**(your workspace) and sta
 | `Auto` | run | run | run |
 | `Full` | run | run | run, and outside the workspace |
 
+### Project and global instructions
+
+Put an `AGENTS.md` in the workspace to give the model project rules (build commands, what not to touch). For rules that
+apply to every project, put an `AGENTS.md` in the `.slvh` folder next to the program; when the two disagree, the project
+file wins.
+
 ### herdr support
 
 Supports [herdr](https://herdr.dev), a terminal multiplexer for coding agents. In a herdr pane the harness reports its
@@ -114,20 +218,25 @@ a tool. Nothing to set up; outside herdr nothing changes.
 
 | Tool | Does |
 |---|---|
-| `read_file`, `list_dir`, `grep` | Read and search files in the workspace |
+| `read_file` | Read a file. Big files come in parts sized to the model's context, with a note where to read on |
+| `list_dir`, `grep` | List and search files in the workspace |
 | `create_file`, `edit_file` | Create a new file, replace text in a file |
 | `delete_file_or_folder` | Delete (never the workspace itself) |
-| `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere, 120 s timeout |
+| `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere, 120 s default timeout. Long output is cut; the full text is saved in `.slvh/temp/` in the workspace |
 | `web_search` | Search the web; optional, needs a search server ([setup](#web-search-optional)) |
 
-Put an `AGENTS.md` in the workspace to give the model project rules (build commands, what not to touch).
+On small models (32k context or less) `grep` and `run_shell` return less, so the conversation lasts longer.
 
 ## Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| `Connection refused` | Server not running, or wrong `endpoint` |
-| `HTTP 404` | Wrong model `id` |
+| `Connection refused` / server "did not answer" | Server not running, or wrong `endpoint` |
+| `/model` shows no Claude or Gemini models | Check the start-up warnings. Variable not set → set it as above and open a **new** terminal; `api_key_env` must hold the variable's name, not the key |
+| Claude: "This API key is not scoped to a workspace" | Create the key inside a workspace in the Claude Console |
+| "can't turn thinking off" | Some Claude models always think; use `/thinking low` instead |
+| `HTTP 404` | Wrong model `id`, or the `endpoint` is missing its last `/` |
+| Settings seem ignored after an update | The file must be in `.slvh/settings.json` next to the program |
 | Only chats, never uses files | The model doesn't support tool calling |
 | Error after a long conversation | Context full: `/reset` |
 | `Permission denied` (Linux / macOS) | `chmod +x slvh` |
@@ -140,18 +249,17 @@ Planned, roughly in this order. No dates; plans change.
 
 **Next**
 
-- **Cloud models:** Gemini (free tier) and other OpenAI-compatible APIs with an API key, so you can start without a local model server.
+- **Cloud polish:** wait and retry when a free-tier or rate limit is hit, with a clear message.
 - **Long sessions:** automatic context management, so a long conversation keeps working instead of hitting the limit.
-- **Images:** `/image <file>` to show the model a picture (for models with vision).
+- **Images:** show the model a picture (for models with vision).
 - **Smoother confirmations:** answer "always" for a tool once per session; safe read-only commands run without asking in `Auto`.
-- **Bigger files:** `read_file` reads large files in parts instead of all at once.
 - **Debuggable reports:** a session log file and `--version`.
 
 **Later**
 
 - **Extensions:** skills (`SKILL.md` instructions loaded on demand) and MCP servers as extra tools.
 - **Web:** `web_fetch` to read a page, web search without hosting your own search server.
-- **Setup:** detect model settings from the server; guided first-run setup with a bundled local model.
+- **Setup:** guided first-run setup with a bundled local model.
 - **Sessions:** save and resume a conversation; remember facts across sessions.
 - **Sub-agents:** hand a self-contained task to a fresh agent with its own context.
 - **Native builds:** compiled to native code for faster start-up and a smaller footprint.
