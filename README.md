@@ -19,6 +19,10 @@ llama-swap, Ollama, LM Studio.
 - Windows x64, Linux x64, or macOS (arm64 / x64, untested). No .NET install needed.
 - A model server with an OpenAI-compatible API. The model should support **tool calling**; others can only chat.
 
+or
+
+Cloud models - Anthropic/Gemini
+
 | Server | Endpoint |
 |---|---|
 | llama.cpp `llama-server` | `http://localhost:8080/` |
