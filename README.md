@@ -140,7 +140,6 @@ Planned, roughly in this order. No dates; plans change.
 
 **Next**
 
-- **Cloud models:** Gemini (free tier) and other OpenAI-compatible APIs with an API key, so you can start without a local model server.
 - **Long sessions:** automatic context management, so a long conversation keeps working instead of hitting the limit.
 - **Images:** `/image <file>` to show the model a picture (for models with vision).
 - **Smoother confirmations:** answer "always" for a tool once per session; safe read-only commands run without asking in `Auto`.
