@@ -5,6 +5,43 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-20
+
+### Added
+- **New input line**: arrows, Backspace and editing now work on macOS and Linux too, also on wrapped and multi-line messages. The input stays at the bottom with a status line (mode, model, server, context used); type the next message while the model works (it is queued).
+- **Command completion**: `/` opens a menu of commands, then their values (models, modes, thinking levels, folders); Tab completes.
+- **Keyboard shortcuts** like Claude Code: Shift+Tab switches the mode, Esc stops an answer, ↑/↓ and Ctrl+R for history (saved between runs), Ctrl+A/E, Ctrl+W/U/K, Ctrl+_ to undo, Alt+arrows, `\` + Enter for a new line, `?` lists them.
+- **Safe paste**: pasted text with line breaks or tabs stays in the input until you press Enter, also when the terminal pastes very fast.
+- **Paste an image** with Ctrl+V or Alt+V: a screenshot or copied image file is saved and its path is typed into the message (ready for image support).
+
+### Changed
+- The prompt is now `>>` in the colour of the session mode; mode, model and server moved to the status line under the input. Sent messages still show `Mode · model >>` above the answer.
+
+### Fixed
+- Shell commands run by the assistant no longer read from your keyboard (a command waiting for input gets end-of-input instead of hanging).
+- `git` commands run by the assistant fail at once instead of waiting for a password or passphrase nobody can type.
+- File tools no longer follow symbolic links out of the workspace (except in Full mode), and `grep` skips linked files. Paths typed with different upper/lower case still work on Windows and macOS.
+- In Full mode, `delete` now refuses any folder that contains the workspace (e.g. `..`), not just the workspace itself.
+- The cursor and the input line no longer flicker while the assistant's reply streams in.
+- The cursor no longer blinks on and off while the "working" spinner turns.
+
+### Known issues
+- Making the window narrower while the input is shown can leave a few stray lines on terminals that don't re-wrap text on resize (most do: Terminal, iTerm2, Windows Terminal, VS Code).
+- On macOS and Linux, a command that asks for a password straight from the terminal (`sudo`, `ssh`) competes with the input line for your keys. Don't type a password while the assistant runs such a command; press Esc to stop it.
+
+## [0.3.1] - 2026-10-19
+
+### Added
+- **OpenAI models** (GPT-5, o-series, GPT-4.1): add `https://api.openai.com/v1/` as a backend with `api_key_env`. Only chat models show in `/model`, `/thinking` sets the reasoning effort, and the model's reasoning is kept between tool calls. Uses OpenAI's Responses API; nothing is stored on OpenAI's side (`store: false`).
+- **LM Studio backend** (0.4.8 or newer): detected automatically, or set `type: "lmstudio"`. `/model` lists its chat models with tool, vision and thinking support. The context size comes from the loaded model. `/thinking low|medium|high` sets the reasoning effort.
+
+### Known issues
+- LM Studio: `/thinking off` does not turn thinking off on models that think by default; the model's own setting applies.
+
+### Changed
+- The input prompt shows the active model instead of the backend, e.g. `Auto · qwen3-8b >>`. `/model` still shows the backend.
+- The default session mode is now **Auto** (was **Edit**): the assistant creates, edits and deletes files and runs commands without asking — file tools still stay inside the workspace. Start more careful with `/session-mode Edit` or `/session-mode Manual`.
+
 ## [0.3.0] - 2026-10-19
 
 ### Added
@@ -26,6 +63,7 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 - `settings.json` has a new layout: your settings go under `user_settings`, and the model list is now `user_models`. An old-style file is renamed to `settings.json.old` and a new default file is created; copy your models and options from the old file into the new one.
 
 ### Fixed
+- Windows: an API key variable set after the terminal (or herdr) was started is now found — the harness also reads it from your user and system environment settings. A missing key now gives one warning instead of two.
 - An API key set for a local model server was also sent to the web search server; tools now use their own connection without it.
 - A backend or model address without `http://` (e.g. `localhost:8080`) crashed the start; it is now skipped with a warning.
 - Warnings found at start (missing API key variable, server not answering, …) were wiped by the screen clear; they now show after it.
@@ -70,3 +108,5 @@ First public demo build.
 [0.2.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.2.0
 [0.2.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.2.1
 [0.3.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.3.0
+[0.3.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.3.1
+[0.4.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.4.0

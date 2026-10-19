@@ -101,7 +101,7 @@ cost money (except Gemini's free tier); `/cost` shows what you used.
 
 Put each key in an environment variable and write the variable's name in `api_key_env`. The steps below type the key
 at a hidden prompt, so it does not land in your shell history. Repeat for each key (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`),
-then **open a new terminal** — one that was already open does not see the new variable.
+then **open a new terminal** — one that was already open does not see the new variable (on Windows the harness also reads it straight from your user settings, so even an old terminal or herdr session finds it).
 
 **Windows** — Start menu → *Edit environment variables for your account* → **New…** → name `GEMINI_API_KEY`, value: your
 key → OK. Or in PowerShell 7:
@@ -251,7 +251,7 @@ Planned, roughly in this order. No dates; plans change.
 
 - **Cloud polish:** wait and retry when a free-tier or rate limit is hit, with a clear message.
 - **Long sessions:** automatic context management, so a long conversation keeps working instead of hitting the limit.
-- **Images:** show the model a picture (for models with vision).
+- **Images:** show the model a picture (for models with vision): paste a screenshot or type the image's path.
 - **Smoother confirmations:** answer "always" for a tool once per session; safe read-only commands run without asking in `Auto`.
 - **Debuggable reports:** a session log file and `--version`.
 
