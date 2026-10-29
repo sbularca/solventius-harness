@@ -5,6 +5,23 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-29
+
+### Added
+- **Context compaction.** When the conversation reaches 80 % of the usable context (or `compact_at`, if lower), the harness shrinks old tool results to one-line notes and, if that is not enough, summarizes the older turns into one message. The last 2 turns stay as they are. A part too large for one summary request is summarized in chunks; if a request fails, the oldest turns are dropped with a note. "Conversation too long — use /reset" appears when even that does not help. Inside one long turn (many tool calls after a single message), the older steps are summarized into that message and the last rounds stay.
+- `/compact [focus]` compacts now; the optional focus text tells the summary what to keep. Esc cancels it and keeps the history. `/context` shows used, budget, trigger and tokens by part.
+- When the server answers "context too long" (OpenAI, Claude, Gemini, llama.cpp, vLLM), the harness compacts and retries once. If that fails after tool work, the turn is kept (no rollback) and the error points to `/compact` or `/reset`.
+- New settings `compact_at` (global, per backend, per model) and `auto_compact`. Use `compact_at` to cap the prompt size and cost on cloud models.
+- A newly created `settings.json` lists the Gemini, Claude and OpenAI backends with `compact_at: 150000`. A key that is not set gives a warning at start; delete the backends you do not use. Existing files stay as they are.
+- When one step's tool results are too large to keep or summarize, compaction turns all tool results (also the current turn's) into one-line notes, so the session does not get stuck on the same "context full" error. A single tool result that does not fit the free context (or is over half of it per step) is replaced by an error that asks the model for a smaller part. The "Context N % full" line now counts the new messages too.
+- The busy line shows "Compacting" during the summary; an info line shows the size before and after. The summary request counts in `/cost`.
+
+### Changed
+- `web_search` now sends a User-Agent (`SolventiusHarness`) with its requests. Search backends that reject or filter requests without one (e.g. a self-hosted 4get with bot protection enabled) now work.
+
+### Fixed
+- The context size in the footer now updates after `/clear`, `/reset` and a compaction. It shows an estimate until the next model response.
+
 ## [0.4.0] - 2026-10-20
 
 ### Added
@@ -110,3 +127,4 @@ First public demo build.
 [0.3.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.3.0
 [0.3.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.3.1
 [0.4.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.4.0
+[0.5.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.5.0
