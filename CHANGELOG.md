@@ -5,6 +5,14 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-30
+
+### Changed
+- Automatic compaction starts later: at 95 % of the usable context (was 80 %). A 65k model now compacts at about 59k, not 49k.
+
+### Fixed
+- The "Compacted X -> Y tokens" line now starts from the real context size reported by the server. Before, it showed a low estimate (for example 19k when the context held 49k).
+
 ## [0.5.0] - 2026-10-29
 
 ### Added
@@ -128,3 +136,4 @@ First public demo build.
 [0.3.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.3.1
 [0.4.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.4.0
 [0.5.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.5.0
+[0.5.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.5.1
