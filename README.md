@@ -143,6 +143,9 @@ model, or to add a model no server lists (give it its own `endpoint`):
 
 - `context_size` wins over the server's value (you get a warning when they differ).
 - `max_tokens`: max tokens per answer, *including* the model's thinking; must be smaller than the context size.
+- `compact_at`: prompt size in tokens at which the conversation is compacted (default: 80 % of the usable context). Also
+  works on a backend, or in `user_settings` for all models. On cloud models it caps the cost per request.
+  `"auto_compact": false` in `user_settings` turns automatic compaction off (`/compact` still works).
 
 ### Web search (optional)
 
@@ -176,7 +179,8 @@ Open a terminal **in the folder you want it to work in** (your workspace) and ty
 (a missing API key variable, a server that doesn't answer) show above the welcome box.
 
 The prompt shows the session mode and where your message goes, e.g. `Edit · home (LlamaSwap) >>`. After each answer a
-stats line shows the time, the tokens and how full the context is.
+stats line shows the time, the tokens and how full the context is. Near the limit the conversation is compacted by
+itself: old tool results shrink to one-line notes and older turns become a summary; the last 2 turns stay as they are.
 
 | Command | Effect |
 |---|---|
@@ -188,6 +192,8 @@ stats line shows the time, the tokens and how full the context is.
 | `/session-mode <mode>` | Change when it asks (see below) |
 | `/set-workspace <folder>` | Work in another folder |
 | `/reset` or `/clear` | Start a fresh conversation |
+| `/compact [focus]` | Compact the conversation now; the optional focus says what the summary must keep (e.g. `/compact keep the file names`) |
+| `/context` | Show how full the context is and when compaction starts |
 | `/exit` | Quit |
 
 **Ctrl+C** stops the current answer. **Ctrl+D** quits (asks first).
@@ -225,7 +231,8 @@ a tool. Nothing to set up; outside herdr nothing changes.
 | `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere, 120 s default timeout. Long output is cut; the full text is saved in `.slvh/temp/` in the workspace |
 | `web_search` | Search the web; optional, needs a search server ([setup](#web-search-optional)) |
 
-On small models (32k context or less) `grep` and `run_shell` return less, so the conversation lasts longer.
+On small models (32k context or less) `grep` and `run_shell` return less, so the conversation lasts longer. A tool result
+too large for the free context is not added; the model gets a short error and asks for a smaller part.
 
 ## Troubleshooting
 
@@ -238,7 +245,7 @@ On small models (32k context or less) `grep` and `run_shell` return less, so the
 | `HTTP 404` | Wrong model `id`, or the `endpoint` is missing its last `/` |
 | Settings seem ignored after an update | The file must be in `.slvh/settings.json` next to the program |
 | Only chats, never uses files | The model doesn't support tool calling |
-| Error after a long conversation | Context full: `/reset` |
+| `Conversation too long - use /reset` | Even the summary doesn't fit. Check that `context_size` matches the server, then `/reset`; a lower `compact_at` compacts earlier |
 | `Permission denied` (Linux / macOS) | `chmod +x slvh` |
 | `error: no search provider available` | Add `search_providers` to `settings.json`, see [Web search](#web-search-optional) |
 | Web search returns an HTTP error | Server down or wrong `endpoint`; for SearXNG, `json` missing in `formats` |
@@ -250,7 +257,6 @@ Planned, roughly in this order. No dates; plans change.
 **Next**
 
 - **Cloud polish:** wait and retry when a free-tier or rate limit is hit, with a clear message.
-- **Long sessions:** automatic context management, so a long conversation keeps working instead of hitting the limit.
 - **Images:** show the model a picture (for models with vision): paste a screenshot or type the image's path.
 - **Smoother confirmations:** answer "always" for a tool once per session; safe read-only commands run without asking in `Auto`.
 - **Debuggable reports:** a session log file and `--version`.
