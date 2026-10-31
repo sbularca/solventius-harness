@@ -5,6 +5,11 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-10-31
+
+### Changed
+- `/clear` now also clears the screen, in the terminal and on the web page, and shows the session info again at the top. `/reset` only forgets the conversation; the screen stays.
+
 ## [0.6.1] - 2026-10-31
 
 ### Fixed
@@ -173,3 +178,4 @@ First public demo build.
 [0.5.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.5.1
 [0.6.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.0
 [0.6.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.1
+[0.6.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.2
