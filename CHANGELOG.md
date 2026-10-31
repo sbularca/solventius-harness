@@ -5,6 +5,35 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-31
+
+### Added
+- **Web UI.** `slvh --web` shows the same session as a web page: on this computer, a laptop on the LAN, or the phone over Tailscale. Type, allow or deny tools, and stop a turn from the terminal or the browser. The page has a model and a mode list. `/web` shows the address with its token; `/web open` opens it. New settings `web_bind` (default `127.0.0.1`, this computer only) and `web_port` (default `8787`). Several harnesses can run at once, one address each. See the README section "Web UI" for the one-time Windows setup for LAN access.
+- **Background web sessions.** `slvh --web-only` starts a session hidden in the background and opens it in the browser. `slvh --list-sessions` lists the running web sessions with their addresses; `slvh --kill <id>` stops one. The page has a **Quit** button (with a confirmation) that stops the session.
+- **Attach text and code files.** Drop a file on the terminal (or on the web page, or use 📎 there): it shows as a short `[name · n lines]` token or chip, and the model gets the whole file as a code block. Your message in the chat shows only the first 12 lines of each file. Text files up to 256 KB.
+- **Start the web UI later.** `/web start` starts the web UI in a session that started without `--web`; the page shows the session from its start. `/web open` starts it too when it is off.
+- **Logo.** The welcome box shows a small cat logo next to the model, endpoint, workspace and mode, in the terminal and on the web page.
+
+### Changed
+- **Web UI sign-in.** The browser cookie now holds a value made for one address (port and path), not the token, and lasts 30 days. Other servers on `localhost` no longer receive it. Open the address with `?t=` once more after the update.
+- **Web UI with redirected output.** `slvh --web > out.txt` takes messages and `y`/`n` approvals from the terminal too, not only from the browser.
+
+### Fixed
+- An old browser tab now shows a new session on the same address from its start; before, it missed the first messages.
+- Long sessions use less memory: the web history keeps at most 8 MB, and a browser that stops reading is disconnected (it reconnects and catches up).
+- `--list-sessions` no longer removes a running session when its file is locked for a moment (for example by antivirus). On Linux, a clock change no longer removes a running session.
+- Messages with attached files sent from the browser no longer go into `history.txt`.
+- `--kill` no longer reports "Stopped" for a session it could not check.
+- The web token file and the hidden-session log are readable only by you (Linux, macOS).
+- A hidden session on Linux and macOS ignores the hang-up signal when its terminal closes.
+- Opening the address without the last `/` and with `?t=` now signs in; before, it answered "Not signed in".
+- The web address on `localhost` refuses requests from other computers.
+- A browser answer to an old, cancelled approval can no longer answer the next one.
+- `/workspace <path>` + Enter now sets the path you typed. Before, Enter took the first subfolder from the list. To pick a subfolder, choose it with ↑/↓ (or Tab).
+
+### Known issues
+- The web UI uses plain HTTP. On the LAN, someone on the same network could read the token. Use it on networks you trust, or over Tailscale.
+
 ## [0.5.1] - 2026-10-30
 
 ### Changed
@@ -137,3 +166,4 @@ First public demo build.
 [0.4.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.4.0
 [0.5.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.5.0
 [0.5.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.5.1
+[0.6.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.0
