@@ -5,6 +5,11 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-31
+
+### Fixed
+- `slvh --help` shows the help at once; before, it waited for all model servers to answer.
+
 ## [0.6.0] - 2026-10-31
 
 ### Added
@@ -167,3 +172,4 @@ First public demo build.
 [0.5.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.5.0
 [0.5.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.5.1
 [0.6.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.0
+[0.6.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.1
