@@ -5,6 +5,14 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-11-01
+
+### Changed
+- `/model` with more than one backend first lists the backends; pick one to see its models. Before, a long model list hid the last backends (for example OpenAI).
+
+### Fixed
+- Gemini and Gemma models no longer fail with `HTTP 400: Value is not a string: null` on the second message.
+
 ## [0.6.2] - 2026-10-31
 
 ### Changed
@@ -179,3 +187,4 @@ First public demo build.
 [0.6.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.0
 [0.6.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.1
 [0.6.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.2
+[0.6.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.3
