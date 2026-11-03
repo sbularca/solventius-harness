@@ -48,6 +48,10 @@ automatic compaction, and a low CPU and memory footprint that leaves the machine
 Start `slvh` once: it creates `.slvh/settings.json` next to the program. Close it with `/exit` and edit the file. Your
 settings go under `user_settings`; leave `app_state` alone (the app writes it).
 
+**Every setting, explained:** the zip includes `settings.example.jsonc`, with made-up values and a comment on what each
+setting does and why you would use it. It is a reference, the harness does not read it. Copy the parts you need into
+`settings.json`, without the comments: a comment stops that file from loading.
+
 > **Upgrading?** A `settings.json` directly next to the program is no longer read: move it into `.slvh`. A file in the
 > old layout is renamed to `settings.json.old`; copy your values into the new one.
 
@@ -71,15 +75,18 @@ At start each server gets 5 seconds to answer; all their models show up in `/mod
 |---|---|
 | `endpoint` | The server's root address, ending with `/`. |
 | `id` | A name, shown in `/model` and in the prompt. Optional. |
-| `type` | Optional, skips detection: `llama-swap`, `llama.cpp`, `ollama`, `vllm`, `ninfer`, `gemini`, `anthropic`, `openai`, `generic`. |
+| `type` | Optional, skips detection: `llama-swap`, `llama.cpp`, `ollama`, `lmstudio`, `vllm`, `ninfer`, `gemini`, `anthropic`, `openai`, `generic`. |
 | `api_key_env` | The **name** of the environment variable that holds the key — never the key itself. |
 | `compact_at` | Prompt size (tokens) at which the conversation is compacted. Default: 95 % of the usable context. On cloud models it caps the cost per request. |
 
-**Per model** (optional): `user_models` overrides `context_size`, `max_tokens` or `compact_at` for one model, or adds a
+**Per model** (optional): `user_models` overrides `context_size`, `max_tokens`, `compact_at` or `vision` for one model, or adds a
 model no server lists: `"user_models": [{ "id": "qwen3:8b", "context_size": 32768 }]`.
 
 **Privacy and cost:** with a cloud provider, your prompts and the files the assistant reads go to that provider. Gemini's
 free tier may use them to improve Google's products — don't use it on private code. `/cost` shows the tokens you used.
+
+**Rate limits and busy servers:** when a server answers HTTP 429 or 503, the harness waits and tries again up to 3 times. The
+busy line shows the wait, and **Esc** stops it. A daily quota or a wait over 60 seconds gives a plain message at once.
 
 ### API keys
 
@@ -160,6 +167,11 @@ a message · **drop a text file** on the terminal to attach it (up to 256 KB; th
 | `Auto` (default) | run | run | run |
 | `Full` | run | run | run, also outside the workspace |
 
+**Images:** with a vision model, put the path of a png, jpg, webp or gif in your message (full paths with spaces need no quotes;
+also quoted, with `~`, relative to the workspace, or a `file://` link), paste with **Ctrl+V / Alt+V**, or drop the file on the terminal. Limits: 5 images per message,
+5 MB each, 14 MB per request; the last 5 stay in the conversation and older ones become a text note. `"vision": false` in
+`user_models` turns it off for a model. Works with local servers, Gemini, Claude and OpenAI.
+
 **Project rules:** an `AGENTS.md` in the workspace (build commands, what not to touch). Rules for every project go in
 `.slvh/AGENTS.md` next to the program; the project file wins. Both are read at every start, and again after `/reset`,
 `/set-workspace` or a model switch. Keep them short: together at most 40,000 characters, fewer on small models (about 13,000
@@ -170,7 +182,7 @@ for a 32k context). A longer project file is cut; a global file over the limit i
 ## Web UI
 
 Use the same session from a browser: on this computer, a laptop on the LAN, or your phone over Tailscale. Type, attach
-files, allow tools, switch model and mode, and stop an answer on either side.
+files and images (📎, drop or paste), allow tools, switch model and mode, and stop an answer on either side.
 
 - `slvh --web` prints the address, e.g. `http://localhost:8787/my-project/?t=<token>`. Open it once with `?t=`, then
   bookmark the clean address. `/web start` turns it on later in a running session.
@@ -202,6 +214,8 @@ uses plain HTTP, so use it on networks you trust or over Tailscale. New token: d
 | No cloud models in `/model` | Read the start-up warnings: set the variable, open a **new** terminal; `api_key_env` holds the name, not the key |
 | Claude: "not scoped to a workspace" | Create the key inside a workspace in the Claude Console |
 | Only chats, never uses files | The model doesn't support tool calling |
+| `Free-tier limit reached` / `Rate limit reached` / `Server busy` | Try again later, or pick another model with `/model` |
+| Image not sent, an info line says no vision | The model has no vision, or `"vision": false` is set for it |
 | `Conversation too long - use /reset` | Check `context_size` against the server, then `/reset`; a lower `compact_at` compacts earlier |
 | Settings ignored after an update | The file must be `.slvh/settings.json` next to the program |
 | Web UI: "Not signed in" | Open the address with `?t=` once (`/web` shows it) |
@@ -214,8 +228,6 @@ Roughly in this order. No dates; plans change.
 
 **Next**
 
-- **Cloud polish:** wait and retry on rate limits, with a clear message.
-- **Images:** show the model a picture (for models with vision).
 - **Smoother confirmations:** "always" for a tool once per session; safe read-only commands run without asking in `Auto`.
 - **Debuggable reports:** a session log file and `--version`.
 

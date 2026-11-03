@@ -5,6 +5,16 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-04
+
+### Added
+- Image input. Put the path of a png, jpg, webp or gif in your message (absolute paths with spaces work without quotes; also quoted, with `~`, relative to the workspace, or a `file://` link), paste an image with Ctrl+V / Alt+V, or drop a file on the terminal. The model sees the image when it has vision. Works with local servers, Gemini, Claude and OpenAI.
+- Web UI: 📎, drag and drop and Ctrl+V on the page attach images (and text files). Images show as chips with a thumbnail, and as a thumbnail in the sent message.
+- `vision` setting per model in `user_models` to turn image input on or off. Without it the harness uses what the server reports, and sends the image when that is unknown.
+- Limits: 5 images per message, 5 MB each, 14 MB per request, and the last 5 images stay in the conversation. Older images become a text note ("[image removed: …]"). Compaction also removes old images.
+- The release zip includes `settings.example.jsonc`: every setting with made-up values and a comment on what it does and why. It is a reference to copy from, not a file the harness reads.
+- Rate limits and busy servers: when a server answers HTTP 429 or 503, the harness waits and tries again up to 3 times. The busy line shows "Rate limited, waiting…" or "Server busy, waiting…", and Esc stops the wait. A daily quota or a wait over 60 seconds gives a plain message at once ("Free-tier limit reached" on a free tier).
+
 ## [0.6.3] - 2026-11-01
 
 ### Changed
@@ -188,3 +198,4 @@ First public demo build.
 [0.6.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.1
 [0.6.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.2
 [0.6.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.3
+[0.7.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.7.0
