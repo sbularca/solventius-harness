@@ -5,6 +5,13 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-11-04
+
+### Fixed
+
+- Local models that are not loaded yet no longer run with the wrong context size. Your first message now loads the model with a tiny request, then reads its context size and details. `/model` alone does not load anything, and cloud models are not affected.
+- The context numbers stay hidden until the model details are known, so the footer and `/context` no longer show a wrong size or the previous model's size.
+
 ## [0.7.0] - 2026-11-04
 
 ### Added
@@ -199,3 +206,4 @@ First public demo build.
 [0.6.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.2
 [0.6.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.3
 [0.7.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.7.0
+[0.7.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.7.1
