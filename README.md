@@ -34,25 +34,25 @@ automatic compaction, and a low CPU and memory footprint that leaves the machine
 
 ## Install
 
-1. Download the zip for your system from the [releases page](https://github.com/sbularca/solventius-harness/releases/latest) and unzip it, e.g. into `C:\slvh` or `~/slvh`.
-2. Linux / macOS: `chmod +x slvh`. macOS, if blocked: `xattr -d com.apple.quarantine slvh`.
-3. Check it: `slvh --selftest`. Every line must say `PASS` or `SKIP`.
-4. Add the **folder** to `PATH`, so `slvh` works in any project. Don't copy or link the program: its settings live in the
-   `.slvh` folder next to it.
-   - **Windows:** Start menu → *Edit environment variables for your account* → **Path** → **Edit…** → **New** → `C:\slvh`.
-   - **Linux:** `echo 'export PATH="$HOME/slvh:$PATH"' >> ~/.bashrc` · **macOS:** the same, into `~/.zshrc`.
-5. Open a **new** terminal and run `slvh --help`.
+1. Download the zip for your system from the [releases page](https://github.com/sbularca/solventius-harness/releases/latest) and unzip it, e.g. into `C:\solv` or `~/solv`.
+2. Linux / macOS: `chmod +x solv`. macOS, if blocked: `xattr -d com.apple.quarantine solv`.
+3. Check it: `solv --selftest`. Every line must say `PASS` or `SKIP`.
+4. Add the **folder** to `PATH`, so `solv` works in any project. Don't copy or link the program: its settings live in the
+   `.solv` folder next to it.
+   - **Windows:** Start menu → *Edit environment variables for your account* → **Path** → **Edit…** → **New** → `C:\solv`.
+   - **Linux:** `echo 'export PATH="$HOME/solv:$PATH"' >> ~/.bashrc` · **macOS:** the same, into `~/.zshrc`.
+5. Open a **new** terminal and run `solv --help`.
 
 ## Configure
 
-Start `slvh` once: it creates `.slvh/settings.json` next to the program. Close it with `/exit` and edit the file. Your
+Start `solv` once: it creates `.solv/settings.json` next to the program. Close it with `/exit` and edit the file. Your
 settings go under `user_settings`; leave `app_state` alone (the app writes it).
 
 **Every setting, explained:** the zip includes `settings.example.jsonc`, with made-up values and a comment on what each
 setting does and why you would use it. It is a reference, the harness does not read it. Copy the parts you need into
 `settings.json`, without the comments: a comment stops that file from loading.
 
-> **Upgrading?** A `settings.json` directly next to the program is no longer read: move it into `.slvh`. A file in the
+> **Upgrading?** A `settings.json` directly next to the program is no longer read: move it into `.solv`. A file in the
 > old layout is renamed to `settings.json.old`; copy your values into the new one.
 
 ### Model servers
@@ -136,7 +136,7 @@ All go inside `user_settings`, for example:
 
 ## Run
 
-Open a terminal **in your project folder** and type `slvh`. That folder is the workspace. The prompt shows the mode and
+Open a terminal **in your project folder** and type `solv`. That folder is the workspace. The prompt shows the mode and
 the model; after each answer a line shows the time, the tokens and how full the context is. Near the limit the conversation
 compacts itself: old tool results shrink to notes, older turns become a summary, the last 2 turns stay.
 
@@ -173,7 +173,7 @@ also quoted, with `~`, relative to the workspace, or a `file://` link), paste wi
 `user_models` turns it off for a model. Works with local servers, Gemini, Claude and OpenAI.
 
 **Project rules:** an `AGENTS.md` in the workspace (build commands, what not to touch). Rules for every project go in
-`.slvh/AGENTS.md` next to the program; the project file wins. Both are read at every start, and again after `/reset`,
+`.solv/AGENTS.md` next to the program; the project file wins. Both are read at every start, and again after `/reset`,
 `/set-workspace` or a model switch. Keep them short: together at most 40,000 characters, fewer on small models (about 13,000
 for a 32k context). A longer project file is cut; a global file over the limit is skipped, with a warning.
 
@@ -184,15 +184,15 @@ for a 32k context). A longer project file is cut; a global file over the limit i
 Use the same session from a browser: on this computer, a laptop on the LAN, or your phone over Tailscale. Type, attach
 files and images (📎, drop or paste), allow tools, switch model and mode, and stop an answer on either side.
 
-- `slvh --web` prints the address, e.g. `http://localhost:8787/my-project/?t=<token>`. Open it once with `?t=`, then
+- `solv --web` prints the address, e.g. `http://localhost:8787/my-project/?t=<token>`. Open it once with `?t=`, then
   bookmark the clean address. `/web start` turns it on later in a running session.
-- `slvh --web-only` runs the session **hidden in the background** and opens the page. The page's **Quit** button stops it;
-  `slvh --list-sessions` lists running sessions with their links; `slvh --kill <id>` stops one.
+- `solv --web-only` runs the session **hidden in the background** and opens the page. The page's **Quit** button stops it;
+  `solv --list-sessions` lists running sessions with their links; `solv --kill <id>` stops one.
 - **Other devices:** in `user_settings`, set `"web_bind": "0.0.0.0", "web_port": 8787` (default: `127.0.0.1`, this
   computer only). On Windows run once as administrator: `netsh http add urlacl url=http://+:8787/ user=%USERDOMAIN%\%USERNAME%`.
 
 **Security:** the page can do everything the harness can, including running commands; the token is the only lock. It
-uses plain HTTP, so use it on networks you trust or over Tailscale. New token: delete `.slvh/web-token` and restart.
+uses plain HTTP, so use it on networks you trust or over Tailscale. New token: delete `.solv/web-token` and restart.
 
 ## Tools
 
@@ -202,7 +202,7 @@ uses plain HTTP, so use it on networks you trust or over Tailscale. New token: d
 | `list_dir`, `grep` | List and search files in the workspace |
 | `create_file`, `edit_file` | Create a file, replace text in a file |
 | `delete_file_or_folder` | Delete (never the workspace itself) |
-| `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere; 120 s timeout; long output saved to `.slvh/temp/` |
+| `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere; 120 s timeout; long output saved to `.solv/temp/` |
 | `web_search` | Search the web (optional, see above) |
 
 ## Troubleshooting
@@ -217,9 +217,9 @@ uses plain HTTP, so use it on networks you trust or over Tailscale. New token: d
 | `Free-tier limit reached` / `Rate limit reached` / `Server busy` | Try again later, or pick another model with `/model` |
 | Image not sent, an info line says no vision | The model has no vision, or `"vision": false` is set for it |
 | `Conversation too long - use /reset` | Check `context_size` against the server, then `/reset`; a lower `compact_at` compacts earlier |
-| Settings ignored after an update | The file must be `.slvh/settings.json` next to the program |
+| Settings ignored after an update | The file must be `.solv/settings.json` next to the program |
 | Web UI: "Not signed in" | Open the address with `?t=` once (`/web` shows it) |
-| `Permission denied` (Linux / macOS) | `chmod +x slvh` |
+| `Permission denied` (Linux / macOS) | `chmod +x solv` |
 | Web search fails | No `search_providers`, server down, or SearXNG without `json` |
 
 ## Roadmap
@@ -234,7 +234,7 @@ Roughly in this order. No dates; plans change.
 **Later**
 
 - **Extensions:** skills (`SKILL.md`) and MCP servers as extra tools.
-- **Web:** `web_fetch` to read a page, web search without your own search server.
+- **Web:** web search without your own search server.
 - **Setup:** guided first-run setup with a bundled local model.
 - **Sessions:** save and resume a conversation; remember facts across sessions.
 - **Sub-agents:** hand a self-contained task to a fresh agent with its own context.

@@ -5,6 +5,23 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-05
+
+### Added
+
+- New `glob` tool: the model finds files by name pattern, such as `**/*.cs`, newest first.
+- New `web_fetch` tool: the model reads one public web page as text. It refuses local and private addresses, and it does not use a system proxy.
+- New `ask_user_question` tool: the model asks you one question with 2 to 4 options and continues the same turn with your answer. Type `skip` to skip it, also in the browser.
+- Skills: add a folder with a `SKILL.md` file, and the model loads its instructions when they fit your request. Type `/<skill-name>` to load one yourself, and `/skills` to list them.
+
+### Changed
+
+- **The program is now `solv` (`solv.exe` on Windows), and the harness folder is now `.solv` instead of `.slvh`.** Rename your `.slvh` folder next to the program to keep your settings. You can delete `.slvh` folders in your workspaces.
+- After a file tool refuses a path outside the workspace, `run_shell` asks for confirmation until your next message, even in Auto mode.
+- The model is now told not to work around a refused path with `run_shell`.
+- Plan mode no longer saves long `run_shell` or `web_fetch` output to `.solv/temp/`.
+- Long output is no longer saved when `.solv` or `.solv/temp` in the workspace is a link, because the file would land outside the workspace.
+
 ## [0.7.1] - 2026-11-04
 
 ### Fixed
@@ -207,3 +224,4 @@ First public demo build.
 [0.6.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.6.3
 [0.7.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.7.0
 [0.7.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.7.1
+[0.8.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.8.0
