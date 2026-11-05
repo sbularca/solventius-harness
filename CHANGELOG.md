@@ -5,6 +5,12 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-05
+
+### Changed
+
+- Skill descriptions are now cut at 1024 characters instead of 200, so long descriptions keep their trigger phrases. Long descriptions use more of the context on every request.
+
 ## [0.8.0] - 2026-11-05
 
 ### Added
@@ -225,3 +231,4 @@ First public demo build.
 [0.7.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.7.0
 [0.7.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.7.1
 [0.8.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.8.0
+[0.8.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.8.1
