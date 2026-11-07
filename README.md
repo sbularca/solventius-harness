@@ -8,6 +8,22 @@ A terminal coding assistant for **local language models** and the **Claude**, **
 - It runs commands after you allow them.
 - The same session can also run in a browser.
 
+## Quick install
+
+**Windows** (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.ps1 | iex
+```
+
+**Linux / macOS:**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh
+```
+
+Then open a new terminal and follow [Configure](#configure). Run the same command again to update. More options: [Install](#install).
+
 **[Download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** · [Changelog](CHANGELOG.md)
 
 **Why this one**
@@ -55,6 +71,17 @@ game development tools in mind for later. The source code may follow; for now th
 | OpenAI | `https://api.openai.com/v1/` |
 
 ## Install
+
+**One command** (installs the latest release, checks its SHA-256, adds it to `PATH`; run it again to update):
+
+- **Windows** (PowerShell): `irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.ps1 | iex`
+  → `%LOCALAPPDATA%\solv`
+- **Linux / macOS**: `curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh`
+  → `~/solv`
+
+Set `SOLV_INSTALL_DIR` to install somewhere else. Open a new terminal afterwards. Updates keep your `.solv` folder.
+
+**By hand:**
 
 1. Download the zip for your system from the [releases page](https://github.com/sbularca/solventius-harness/releases/latest).
 2. Unzip it, for example into `C:\solv` or `~/solv`.
