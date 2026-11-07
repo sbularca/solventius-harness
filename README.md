@@ -22,15 +22,16 @@ irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.p
 curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh
 ```
 
-Then open a new terminal and follow [Configure](#configure). Run the same command again to update. More options: [Install](#install).
+Then open a new terminal and follow [Configure](#configure). Run the same command again to update. Choose the folder or install by hand: [Install](#install).
 
-**[Download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** · [Changelog](CHANGELOG.md)
+You can also **[download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** as a zip.
+See what changed in the [changelog](CHANGELOG.md).
 
 **Why this one**
 
 - **Built for local models:** shorter tool results on small contexts (32k or less), file reads sized to the context, automatic compaction.
 - **Light:** one file, a low CPU and memory footprint. The machine stays free for the model.
-- **Little setup:** give a server address. It detects the server type, lists the models and reads their context size.
+- **Little setup:** the first start finds your local server or takes an API key. It detects the server type, lists the models and reads their context size.
 - **No cloud account needed.**
 
 It does not include a model. It started as a learning project and became a tool I use every day. Inspired by pi.dev, with
@@ -51,8 +52,15 @@ game development tools in mind for later. The source code may follow; for now th
 
 ## Contents
 
-[Requirements](#requirements) · [Install](#install) · [Configure](#configure) · [Run](#run) · [Skills](#skills) ·
-[Web UI](#web-ui) · [Tools](#tools) · [Troubleshooting](#troubleshooting) · [Roadmap](#roadmap)
+- [Requirements](#requirements)
+- [Install](#install)
+- [Configure](#configure)
+- [Run](#run)
+- [Skills](#skills)
+- [Web UI](#web-ui)
+- [Tools](#tools)
+- [Troubleshooting](#troubleshooting)
+- [Roadmap](#roadmap)
 
 ## Requirements
 
@@ -70,6 +78,8 @@ game development tools in mind for later. The source code may follow; for now th
 | Claude | `https://api.anthropic.com/` |
 | OpenAI | `https://api.openai.com/v1/` |
 
+[↑ Back to contents](#contents)
+
 ## Install
 
 **One command** (installs the latest release, checks its SHA-256, adds it to `PATH`; run it again to update):
@@ -79,7 +89,18 @@ game development tools in mind for later. The source code may follow; for now th
 - **Linux / macOS**: `curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh`
   → `~/solv`
 
-Set `SOLV_INSTALL_DIR` to install somewhere else. Open a new terminal afterwards. Updates keep your `.solv` folder.
+Open a new terminal afterwards. Updates keep your `.solv` folder.
+
+**Choose the install folder:** set `SOLV_INSTALL_DIR`. Use the same folder for every update; it must be a folder of its own
+that your user can write to (not `Program Files`, `/usr/local/bin` or `~/.local/bin`).
+
+```powershell
+$env:SOLV_INSTALL_DIR = "D:\tools\solv"; irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.ps1 | iex
+```
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | SOLV_INSTALL_DIR="$HOME/tools/solv" sh
+```
 
 **By hand:**
 
@@ -93,11 +114,27 @@ Set `SOLV_INSTALL_DIR` to install somewhere else. Open a new terminal afterwards
    - **macOS:** the same, into `~/.zshrc`.
 6. Open a **new** terminal and run `solv --help`.
 
+[↑ Back to contents](#contents)
+
 ## Configure
 
-1. Start `solv` once. It creates `.solv/settings.json` next to the program.
-2. Close it with `/exit`.
-3. Edit the file. Your settings go under `user_settings`. Leave `app_state` alone; the app writes it.
+**First start:** start `solv`. A short setup runs when there is no `settings.json`:
+
+1. Pick a model server. It looks for a local one (Ollama, llama.cpp, LM Studio) or tests the address you type.
+   For Gemini, Claude or OpenAI it asks for the API key (hidden while you type), tests it and saves it.
+2. Pick a model.
+3. Answer a few yes/no questions: session logs, full tool results, the model's reasoning. Enter keeps "no".
+4. Optional: give a 4get or SearXNG search server. It tests one search.
+
+- **Run it again** any time with `/setup` or `solv --setup`. `/setup local|gemini|claude|openai` goes straight to one;
+  `/setup preferences` and `/setup search` ask only those questions.
+- **Skip it:** press Enter on an empty answer. You get a default `settings.json` to fill in by hand.
+
+**By hand:** edit `.solv/settings.json` next to the program. Your settings go under `user_settings`. Leave `app_state`
+alone; the app writes it.
+
+> **Read-only program folder?** If `solv` cannot write next to itself (for example under `C:\Program Files`), it keeps its
+> settings, keys, logs and history in `.solv` in your home folder instead.
 
 > **Every setting, explained:** the zip includes `settings.example.jsonc`, with a comment for each setting. The harness
 > does not read it. Copy the parts you need into `settings.json` **without the comments**: a comment stops the file from loading.
@@ -107,7 +144,8 @@ Set `SOLV_INSTALL_DIR` to install somewhere else. Open a new terminal afterwards
 
 ### Model servers
 
-A new `settings.json` already lists Gemini, Claude and OpenAI. Delete the ones you don't use and add your local servers.
+The setup writes this part for you. A default `settings.json` (setup skipped) already lists Gemini, Claude and OpenAI.
+Delete the ones you don't use and add your local servers.
 
 ```json
 {
@@ -126,6 +164,7 @@ A new `settings.json` already lists Gemini, Claude and OpenAI. Delete the ones y
 | `id` | Optional name, shown in `/model` and in the prompt. |
 | `type` | Optional, skips detection: `llama-swap`, `llama.cpp`, `ollama`, `lmstudio`, `vllm`, `ninfer`, `gemini`, `anthropic`, `openai`, `generic`. |
 | `api_key_env` | The **name** of the environment variable that holds the key. Never the key itself. |
+| `key_command` | A command that prints the key, for a password manager (e.g. `op read op://Private/gemini/credential`). Runs once per session, within 15 s. |
 | `compact_at` | Compact the conversation at this prompt size (tokens). Default: 95 % of the usable context. On cloud models it caps the cost per request. |
 
 - **Start-up:** each server gets 5 seconds to answer. All their models show up in `/model`.
@@ -139,7 +178,16 @@ A new `settings.json` already lists Gemini, Claude and OpenAI. Delete the ones y
 
 ### API keys
 
-Put each key in an environment variable, then **open a new terminal**. These commands ask for the key at a hidden prompt,
+**Easiest:** `/setup gemini` (or `claude`, `openai`). It tests the key and saves it in `.solv/.credentials`.
+
+- That file is readable only by you. It is **not encrypted**. Never commit or share it.
+- **Order:** the `api_key_env` variable wins, then `key_command`, then the saved key.
+
+**Hidden from the model:** shell commands get no key variables. A loaded key that shows up in a tool result or the log
+becomes `[hidden]`. This stops accidental leaks only: a command can still read a key from the file where you stored it.
+Read what a command does before you allow it.
+
+**Environment variable instead:** set it, then **open a new terminal**. These commands ask for the key at a hidden prompt,
 so it stays out of your shell history:
 
 - **Windows** (PowerShell 7): `[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", (Read-Host "Key" -MaskInput), "User")`
@@ -158,6 +206,7 @@ The `web_search` tool needs a search server: [4get](https://git.lolcat.ca/lolcat
 "active_search_provider": "4get"
 ```
 
+- `/setup search` adds one and tests it. Without a search server, the model does not get `web_search`.
 - The `endpoint` has **no** trailing `/`.
 - Quick 4get: `docker run -d --name 4get -p 8081:80 -e FOURGET_SERVER_NAME="localhost" -e FOURGET_PROTO="http" luuul/4get:latest`
 
@@ -173,6 +222,9 @@ All go inside `user_settings`.
 | `system_prompt` | Instructions sent at the start of every conversation. | `You are a terse AI assistant` |
 | `show_reasoning` | Show the model's thinking text. | `false` |
 | `show_tool_response` | Show what each tool returned to the model. | `false` |
+| `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Keeps the last 20 sessions. Attach them to bug reports. | `false` |
+
+[↑ Back to contents](#contents)
 
 ## Run
 
@@ -194,9 +246,12 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/<skill-name> [text]` | Load a skill and send it with your text. A built-in command with the same name wins. |
 | `/set-workspace <folder>` | Work in another folder, with a fresh conversation. |
 | `/web [start\|open]` | Show the web UI address · start it now · open it in the browser. |
-| `/reset`, `/help`, `/exit` | Fresh conversation · all commands · quit. |
+| `/setup [target]` | Connect a model server or API, or change `preferences` or the `search` server (see [Configure](#configure)). |
+| `/approvals` | List what you allowed with `a` (always) this session. |
+| `/revoke <n\|tool\|all>` | Ask again before a tool or command allowed with `a`. |
+| `/reset`, `/help`, `/exit` | Fresh conversation (also clears the `a` approvals) · all commands · quit. |
 
-**Arguments:** `--model <n|id>`, `--workspace <dir>`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--help`.
+**Arguments:** `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--help`.
 
 | Key | Effect |
 |---|---|
@@ -218,8 +273,14 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `Manual` | run | ask | ask |
 | `Plan` | run | blocked | blocked |
 | `Edit` | run | run | ask |
-| `Auto` (default) | run | run | run |
+| `Auto` (default) | run | run | run; shell commands ask unless plainly read-only |
 | `Full` | run | run | run, also outside the workspace |
+
+- **Read-only commands in Auto** run without asking: `git status`, `git diff`, `git log`, `ls`, `dir`, `pwd` and a few more.
+  Builds and tests ask, because they run code from the workspace. A command joined with `;`, `&&`, `|` or `>` always asks.
+- **When it asks:** `y` allows once, `a` allows for the rest of the session, anything else refuses. For `run_shell`, `a`
+  covers only that exact command. In the browser, `a` is the **Always this session** button.
+- The model knows the current mode, and is told when you change it.
 
 ### Images
 
@@ -253,6 +314,8 @@ Works with local servers, Gemini, Claude and OpenAI. `"vision": false` in `user_
 ### herdr
 
 In a [herdr](https://herdr.dev) pane the harness reports **idle**, **working** or **blocked**. Nothing to set up.
+
+[↑ Back to contents](#contents)
 
 ## Skills
 
@@ -296,6 +359,8 @@ A skill is a set of instructions the model loads only when it needs them. It add
 
 > **Trust:** a skill is plain text, but the model follows it. Read the skills of a project you don't trust, as you would its `AGENTS.md`.
 
+[↑ Back to contents](#contents)
+
 ## Web UI
 
 Use the same session from a browser: on this computer, a laptop on the LAN, or your phone over Tailscale. Type, attach
@@ -317,6 +382,8 @@ files and images (📎, drop or paste), allow tools, switch model and mode, and 
 > **Security:** the page can do everything the harness can, including running commands. The token is the only lock, and
 > the page uses plain HTTP. Use it on networks you trust or over Tailscale. New token: delete `.solv/web-token` and restart.
 
+[↑ Back to contents](#contents)
+
 ## Tools
 
 | Tool | Does |
@@ -332,13 +399,15 @@ files and images (📎, drop or paste), allow tools, switch model and mode, and 
 | `ask_user_question` | Ask you one question with 2 to 4 options. Type a number or your own answer; an empty reply or `skip` skips it. |
 | `use_skill` | Load a skill, or read one of its extra files. Only there when skills exist. |
 
+[↑ Back to contents](#contents)
+
 ## Troubleshooting
 
 | Symptom | Fix |
 |---|---|
 | `Connection refused` / server "did not answer" | The server isn't running, or the `endpoint` is wrong. |
 | `HTTP 404` | Wrong model `id`, or the `endpoint` misses its last `/`. |
-| No cloud models in `/model` | Read the start-up warnings. Set the variable and open a **new** terminal. `api_key_env` holds the name, not the key. |
+| No cloud models in `/model` | Read the start-up warnings. Run `/setup gemini` (or `claude`, `openai`), or set the variable and open a **new** terminal. `api_key_env` holds the name, not the key. |
 | Claude: "not scoped to a workspace" | Create the key inside a workspace in the Claude Console. |
 | Only chats, never uses files | The model doesn't support tool calling. |
 | `Free-tier limit reached` / `Rate limit reached` / `Server busy` | Try again later, or pick another model with `/model`. |
@@ -348,7 +417,10 @@ files and images (📎, drop or paste), allow tools, switch model and mode, and 
 | Settings ignored after an update | The file must be `.solv/settings.json` next to the program. |
 | Web UI: "Not signed in" | Open the address with `?t=` once (`/web` shows it). |
 | `Permission denied` (Linux / macOS) | `chmod +x solv` |
-| Web search fails | No `search_providers`, the server is down, or SearXNG lacks `json`. |
+| Web search fails, or the model has no `web_search` | No `search_providers`, the server is down, or SearXNG lacks `json`. Try `/setup search`. |
+| A bug to report | Set `"enable_logging": true`, repeat it, and attach the files from `.solv/logs/` with the `solv --selftest` output. |
+
+[↑ Back to contents](#contents)
 
 ## Roadmap
 
@@ -356,21 +428,18 @@ Roughly in this order. No dates; plans change.
 
 **Next**
 
-- **Smoother confirmations:** "always" for a tool once per session; safe read-only commands run without asking in `Auto`.
-- **Debuggable reports:** a session log file and `--version`.
-
-**Later**
-
 - **Extensions:** MCP servers as extra tools.
-- **Setup:** guided first-run setup with a bundled local model.
+- **Bundled local model:** start without a model server or an API key.
 - **Sessions:** save and resume a conversation; remember facts across sessions.
 - **Sub-agents:** hand a self-contained task to a fresh agent with its own context.
-- **Native builds:** faster start-up and a smaller footprint.
+- **Native builds on Linux and macOS:** faster start-up and a smaller footprint, as on Windows already.
+
+[↑ Back to contents](#contents)
 
 ## Built with
 
-- **One self-contained file** of about 16–18 MB: no installer, no .NET install.
-- **C# / .NET 10**, trimmed single file.
+- **One self-contained file:** no .NET install. About 11 MB on Windows, 16–20 MB elsewhere.
+- **C# / .NET 10:** a native (NativeAOT) binary on Windows, a trimmed single file on Linux and macOS.
 - **[Spectre.Console](https://spectreconsole.net)** (MIT) for the terminal UI, the only dependency. Thanks to its authors.
 
 **How it's made:**

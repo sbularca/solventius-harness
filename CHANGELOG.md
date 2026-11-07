@@ -5,6 +5,44 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-08
+
+### Added
+
+- First-start setup: with no `settings.json`, the harness finds a local model server (or tests the address you type), or takes a Gemini, Claude or OpenAI API key, then lets you pick a model. Run it again with `/setup` or `--setup`; `/setup local|gemini|claude|openai` goes straight to one. The first start also asks about session logs, full tool results, reasoning and a web search server; later, `/setup preferences` and `/setup search` ask only those.
+- API keys typed in the setup (terminal or browser) are hidden while you type and saved in `.solv/.credentials`, readable only by you. A key can also come from a password manager with the new `key_command` setting. The environment variable still wins.
+- One-command install and update: `install.ps1` (Windows) and `install.sh` (Linux, macOS) in the public repo. See the README.
+- New `--version` argument: it shows the version and exits, even when `settings.json` is broken.
+- With `enable_logging` on, each session writes a log file with stack traces and a transcript of prompts, tool calls, results and errors to `.solv/logs/` next to the exe. The last 20 sessions are kept.
+- Confirm prompts accept `a` (always): the tool runs without asking for the rest of the session. For `run_shell`, `a` covers
+  only that exact command. `/approvals` lists them, `/revoke` asks again, `/reset` clears them. The browser has an
+  **Always this session** button.
+- The model now knows the session mode from the start, and gets a short note with your next message when you change it.
+- A warning when an answer is cut off at the token limit (`max_tokens`); the model is told with your next message.
+- If the model calls the same tool with the same arguments 3 times in a row, the third call is skipped and the model is
+  told to change approach.
+
+### Fixed
+
+- Starting `solv` from a folder you cannot write to (such as `C:\Program Files`) no longer stops with "cannot create
+  settings.json". The harness then keeps its settings, keys, logs and history in `.solv` in your home folder.
+- A model reply with a tool call that has no name or no arguments no longer crashes the harness. A call with no name shows a `Bad response` error, and the session continues.
+- API keys are hidden from the model. Shell commands no longer see the key variables, and a loaded key that shows up in a tool result or the log becomes `[hidden]`. A command can still read a key from the file where you stored it.
+- `read_file` on a file with one very long line (minified code, one-line JSON) no longer returns the whole line. The line is cut at the read limit, with a note.
+
+### Changed
+
+- `/skills` shows a tidier list: one line per skill, grouped under its skills folder, `*` marks a loaded skill, and long descriptions are cut to fit the terminal width.
+- **Auto mode asks before shell commands**, except plainly read-only ones (`git status`, `git diff`, `git log`, `ls`, `dir`,
+  `pwd`, …). Builds and tests ask too, because they run code from the workspace.
+- `web_search` is no longer offered to the model when no search server is set (empty `search_providers`, or no endpoint).
+- The model gets short file-tool guidance: read before editing, prefer `edit_file`, find files with `glob` / `list_dir`.
+- The Windows download is now a native binary: smaller (about 11 MB instead of 17 MB).
+- `enable_logging` no longer prints log messages to the console.
+- The first start now creates an empty `.solv/skills` folder next to the exe, so you can see where global skills go.
+- New `settings.json` files include a `Local` backend at `http://localhost:11434/`.
+- Defaults: `web_search` uses 4get at `http://localhost:8888` when `search_providers` is left out, and `system_prompt` is no longer empty.
+
 ## [0.8.1] - 2026-11-05
 
 ### Changed
@@ -232,3 +270,4 @@ First public demo build.
 [0.7.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.7.1
 [0.8.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.8.0
 [0.8.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.8.1
+[0.9.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.9.0
