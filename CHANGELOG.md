@@ -5,6 +5,14 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-08
+
+### Added
+
+- New `--update` argument: it checks GitHub for a newer release, downloads it, checks its SHA-256 and replaces the `solv` binary you ran. It says "Solv is up-to-date" when there is nothing newer. On Windows the old exe is kept as `solv.exe.old` and deleted on the next start.
+- At start, solv tells you when a newer release is available; install it with the new `/update` command. Turn the check off with `check_for_updates: false`.
+- `--update` and `/update` add the solv folder to your PATH when it is not there yet (for example after a manual unzip).
+
 ## [0.9.0] - 2026-11-08
 
 ### Added
@@ -271,3 +279,4 @@ First public demo build.
 [0.8.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.8.0
 [0.8.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.8.1
 [0.9.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.9.0
+[0.10.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.10.0

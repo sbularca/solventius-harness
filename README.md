@@ -22,7 +22,7 @@ irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.p
 curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh
 ```
 
-Then open a new terminal and follow [Configure](#configure). Run the same command again to update. Choose the folder or install by hand: [Install](#install).
+Then open a new terminal and follow [Configure](#configure). Update later with `solv --update`. Choose the folder or install by hand: [Install](#install).
 
 You can also **[download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** as a zip.
 See what changed in the [changelog](CHANGELOG.md).
@@ -90,6 +90,8 @@ game development tools in mind for later. The source code may follow; for now th
   → `~/solv`
 
 Open a new terminal afterwards. Updates keep your `.solv` folder.
+
+**Update:** `solv --update` (or `/update` in a session) downloads the latest release, checks its SHA-256 and replaces the program; start solv again afterwards. It also adds the folder to `PATH` if it is not there yet. At start, solv tells you when a new version is out (turn this off with `check_for_updates`). Running the install command again also updates.
 
 **Choose the install folder:** set `SOLV_INSTALL_DIR`. Use the same folder for every update; it must be a folder of its own
 that your user can write to (not `Program Files`, `/usr/local/bin` or `~/.local/bin`).
@@ -222,6 +224,7 @@ All go inside `user_settings`.
 | `system_prompt` | Instructions sent at the start of every conversation. | `You are a terse AI assistant` |
 | `show_reasoning` | Show the model's thinking text. | `false` |
 | `show_tool_response` | Show what each tool returned to the model. | `false` |
+| `check_for_updates` | At start, tell you when a newer release is out. At most 20 checks a day; offline it stays quiet. | `true` |
 | `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Keeps the last 20 sessions. Attach them to bug reports. | `false` |
 
 [↑ Back to contents](#contents)
@@ -248,10 +251,11 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/web [start\|open]` | Show the web UI address · start it now · open it in the browser. |
 | `/setup [target]` | Connect a model server or API, or change `preferences` or the `search` server (see [Configure](#configure)). |
 | `/approvals` | List what you allowed with `a` (always) this session. |
+| `/update` | Install the latest release. Start solv again to use it. |
 | `/revoke <n\|tool\|all>` | Ask again before a tool or command allowed with `a`. |
 | `/reset`, `/help`, `/exit` | Fresh conversation (also clears the `a` approvals) · all commands · quit. |
 
-**Arguments:** `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--help`.
+**Arguments:** `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update`, `--help`.
 
 | Key | Effect |
 |---|---|
