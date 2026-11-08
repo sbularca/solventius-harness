@@ -5,6 +5,12 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-11-08
+
+### Fixed
+
+- `--update` and `/update` download through the GitHub API, so they work when the github.com website fails (0.10.0 stopped with "504 Gateway Time-out"). If the update still fails, the message now names the file and the reason instead of "cannot reach GitHub".
+
 ## [0.10.0] - 2026-11-08
 
 ### Added
@@ -280,3 +286,4 @@ First public demo build.
 [0.8.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.8.1
 [0.9.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.9.0
 [0.10.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.10.0
+[0.10.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.10.1
