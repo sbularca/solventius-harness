@@ -44,6 +44,7 @@ game development tools in mind for later. The source code may follow; for now th
 - **Session modes:** from asking before every change to running everything.
 - **Many servers:** llama.cpp, llama-swap, Ollama, LM Studio, vLLM, any OpenAI-compatible server, plus Claude, Gemini and OpenAI.
 - **Images:** drag and drop an image on the terminal or the web UI, or paste it or name its path, for vision models.
+- **Documents:** reads the text of PDF, Word (`.docx`), Excel (`.xlsx`) and OpenDocument (`.odt`, `.ods`) files, by `read_file` or drag and drop.
 - **Skills:** instructions in `SKILL.md` files that the model loads when it needs them.
 - **Web:** search with your own search server, and read web pages.
 - **Web UI:** the same session in a browser, also from your phone.
@@ -392,7 +393,7 @@ files and images (📎, drop or paste), allow tools, switch model and mode, and 
 
 | Tool | Does |
 |---|---|
-| `read_file` | Read a file. Big files come in parts sized to the context. |
+| `read_file` | Read a file. Big files come in parts sized to the context. Also returns the text of `.pdf`, `.docx`, `.xlsx`, `.odt` and `.ods` files; refuses other binary files. Scanned PDFs (no text layer) are not supported. |
 | `list_dir`, `grep` | List and search files in the workspace. |
 | `glob` | Find files by name pattern (`**/*.cs`), newest first. |
 | `create_file`, `edit_file` | Create a file, replace text in a file. |
@@ -442,9 +443,10 @@ Roughly in this order. No dates; plans change.
 
 ## Built with
 
-- **One self-contained file:** no .NET install. About 11 MB on Windows, 16–20 MB elsewhere.
+- **One self-contained file:** no .NET install. About 18 MB on Windows, 24–26 MB elsewhere.
 - **C# / .NET 10:** a native (NativeAOT) binary on Windows, a trimmed single file on Linux and macOS.
-- **[Spectre.Console](https://spectreconsole.net)** (MIT) for the terminal UI, the only dependency. Thanks to its authors.
+- **[Spectre.Console](https://spectreconsole.net)** (MIT) for the terminal UI and **[PdfPig](https://github.com/UglyToad/PdfPig)** (Apache-2.0)
+  for reading PDFs, the only dependencies. Thanks to their authors.
 
 **How it's made:**
 
@@ -452,7 +454,7 @@ Roughly in this order. No dates; plans change.
 - **AI help** (mainly Claude, some Qwen): planning, code review, all unit tests, part of the manual testing, parts of the
   UI, the build scripts and part of the docs.
 - **Mostly written by a coding agent (Claude), reviewed by hand:** the backend layer (server detection, Gemini, Claude and
-  OpenAI) and most of the web UI.
+  OpenAI), most of the web UI and the document readers (PDF, Word, Excel, OpenDocument).
 
 Third-party licences: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 

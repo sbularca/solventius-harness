@@ -5,6 +5,16 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-09
+
+### Added
+- `read_file` and drag and drop now read the text of PDF, Word (`.docx`), Excel (`.xlsx`) and OpenDocument (`.odt`, `.ods`) files. Scanned PDFs (images only) and old `.doc`/`.xls` files are not supported.
+
+### Changed
+- `read_file` refuses binary files with an error instead of returning unreadable text.
+- Text files that are not UTF-8 (for example Windows-1252) are now read instead of refused; characters that cannot be decoded show as `�`. UTF-16 files with a byte order mark also work when dropped.
+- The program file is larger (about 18 MB instead of 12 MB on Windows) because of the PDF reader.
+
 ## [0.10.1] - 2026-11-08
 
 ### Fixed
@@ -287,3 +297,4 @@ First public demo build.
 [0.9.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.9.0
 [0.10.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.10.0
 [0.10.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.10.1
+[0.11.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.11.0
