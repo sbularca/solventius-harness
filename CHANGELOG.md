@@ -5,6 +5,34 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-11-09
+
+### Added
+- Two built-in skills ship with solv: `solv-guide` (the model can answer questions about solv itself) and `skill-creator` (the model can write and improve skills for you). A skill of yours with the same name replaces them.
+- A skill the model creates, edits or deletes is available at once, without `/reset`. If the new skill file is broken, the model sees the warning and can fix it.
+- The model may write skills in `.solv/skills/` next to the program (global skills). It always asks first, in every session mode, and "always" does not cover it. The prompt shows the full skill text.
+
+### Changed
+- `read_file` now opens PDF, Word, Excel and OpenDocument files up to 200 MB (was 50 MB). Text files stay at 50 MB.
+- In Auto mode, `ls`, `dir`, `gci` and read-only `git` commands run without asking only when their paths stay inside the workspace. Paths outside it, drives, `env:`, network paths and `git diff --no-index` now ask first.
+- The file tools no longer change anything inside `.git` (except in Full mode). Use git commands instead.
+- `web_fetch` asks first in Manual and Plan mode.
+- The `.solv` folder next to the program is limited to your user account at every start (Windows: only you and SYSTEM).
+- The file tools never touch the program's `.solv` folder except `skills/` and `temp/`, even when the workspace contains it.
+- An HTTP redirect from a model server is no longer followed, so an API key is never sent to another address.
+
+### Fixed
+- Security: a crafted file or web page could make the model run commands or read files outside the workspace in Auto mode without asking. Update if you use Auto mode.
+- A malformed or very large `.docx`, `.odt` or `.xlsx` could crash solv or use gigabytes of memory. Such files now give an error.
+- `run_shell` now stops at its timeout even when the command leaves a background process running.
+- A request that times out now says so and suggests raising `request_timeout`, instead of "Action canceled". An unexpected server reply no longer crashes solv.
+- Anthropic "overloaded" answers (529) are retried like rate limits.
+- After a failed or cancelled turn, the context usage no longer counts the removed messages.
+- `read_file` past the end of a file now says so instead of returning nothing.
+- `--kill` only sends the web token to this computer and only stops a process that is solv.
+- The web UI cannot be shown inside a frame of another page.
+- The PATH line added to your shell profile on Linux and macOS is quoted.
+
 ## [0.11.0] - 2026-11-09
 
 ### Added
@@ -298,3 +326,4 @@ First public demo build.
 [0.10.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.10.0
 [0.10.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.10.1
 [0.11.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.11.0
+[0.11.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.11.1
