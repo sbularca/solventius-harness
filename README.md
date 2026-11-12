@@ -226,7 +226,8 @@ All go inside `user_settings`.
 | `show_reasoning` | Show the model's thinking text. | `false` |
 | `show_tool_response` | Show what each tool returned to the model. | `false` |
 | `check_for_updates` | At start, tell you when a newer release is out. At most 20 checks a day; offline it stays quiet. | `true` |
-| `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Keeps the last 20 sessions. Attach them to bug reports. | `false` |
+| `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Attach them to bug reports. | `false` |
+| `cleanup_period_days` | Delete saved sessions and logs not used for this many days, at start. `0` = keep forever. | `30` |
 
 [↑ Back to contents](#contents)
 
@@ -254,9 +255,12 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/approvals` | List what you allowed with `a` (always) this session. |
 | `/update` | Install the latest release. Start solv again to use it. |
 | `/revoke <n\|tool\|all>` | Ask again before a tool or command allowed with `a`. |
-| `/reset`, `/help`, `/exit` | Fresh conversation (also clears the `a` approvals) · all commands · quit. |
+| `/resume [n\|id]` | List the saved conversations, or switch to one. `/continue` switches to the most recent. |
+| `/reset`, `/help`, `/exit` | Fresh conversation (also clears the `a` approvals) · all commands · quit (shows how to resume). |
 
-**Arguments:** `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update`, `--help`.
+**Arguments:** `--resume [id]` (no id: list saved conversations), `--continue` (the most recent), `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update`, `--help`.
+
+**Saved conversations:** every conversation is saved after each answer in `.solv/history/`. `solv --resume <id>` continues it, in its workspace. Inside herdr, the pane comes back in the same conversation after a herdr restart (needs `solv` on PATH).
 
 | Key | Effect |
 |---|---|
@@ -435,7 +439,7 @@ Roughly in this order. No dates; plans change.
 
 - **Extensions:** MCP servers as extra tools.
 - **Bundled local model:** start without a model server or an API key.
-- **Sessions:** save and resume a conversation; remember facts across sessions.
+- **Memory:** remember facts across sessions.
 - **Sub-agents:** hand a self-contained task to a fresh agent with its own context.
 - **Native builds on Linux and macOS:** faster start-up and a smaller footprint, as on Windows already.
 
