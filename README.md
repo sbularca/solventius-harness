@@ -319,6 +319,7 @@ Works with local servers, Gemini, Claude and OpenAI. `"vision": false` in `user_
 - Both are read at every start, and again after `/reset`, `/set-workspace` or a model switch.
 - **Limit:** 40,000 characters together, fewer on small models (about 13,000 for a 32k context). A longer project file is
   cut; a global file over the limit is skipped, with a warning.
+- A `HANDOFF.md` in the workspace is read at start too (see [Skills](#skills)).
 
 ### herdr
 
@@ -354,6 +355,18 @@ A skill is a set of instructions the model loads only when it needs them. It add
 - The model loads a skill by itself when your request matches the description.
 - Small local models often miss this. Type `/<skill-name> [text]` to load it for sure.
 - `/skills` lists them. Skills are read at the start, and again after `/reset` and `/set-workspace`.
+
+**Built-in skills**
+
+| Skill | What it does |
+|---|---|
+| `solv-guide` | The model answers questions about solv itself: commands, modes, skills, settings. |
+| `skill-creator` | The model writes or improves a skill. Ask "make a skill for writing release notes". |
+| `handoff` | The model writes `HANDOFF.md` in the workspace, so a fresh session can continue the work. Type `/handoff [what the next session is for]`. It replaces an old `HANDOFF.md`. |
+
+A skill of yours with the same name replaces a built-in one.
+
+**Handoff:** when solv starts in a workspace with `HANDOFF.md`, it adds the file to the context and tells you the file is now safe to delete. A resumed conversation does not load it again.
 
 **Rules**
 

@@ -5,6 +5,20 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-13
+
+### Added
+- Sessions are saved after every answer to `.solv/history/`. Continue one later with `solv --resume <id>` (or `--continue` for the most recent); `solv --resume` lists them. In a session, `/resume` and `/continue` switch. A resumed session shows the earlier conversation on screen and in the browser. The model writes a short title for each session.
+- Inside herdr, solv tells herdr how to resume the session. When the herdr server restarts, the pane reopens in the same session (needs `solv` on your PATH).
+- A new built-in skill, `handoff`: the model writes a handoff document of the conversation to the workspace, so a fresh session can continue the work. Type `/handoff`, optionally followed by what the next session is for. It replaces an existing `HANDOFF.md`. When solv starts in a workspace with a `HANDOFF.md`, it adds the file to the context and tells you the file is now safe to delete. A resumed session does not load it again.
+- Setting `cleanup_period_days` (default 30): saved sessions and log files older than this are deleted at start. `0` keeps them forever.
+
+### Changed
+- Log files are now kept for `cleanup_period_days` (30 days by default) instead of the last 20 sessions.
+- `/reset`, `/clear` and `/set-workspace` start a new session id; the old conversation stays saved.
+- The release zips now hold the main README instead of the testers' guide.
+- Quitting (`/exit`, Ctrl+D, the browser's Quit button) now ends the session cleanly and shows the command to resume it. Inside herdr, the agent is released only when you quit, not when the pane is killed.
+
 ## [0.11.1] - 2026-11-09
 
 ### Added
@@ -327,3 +341,4 @@ First public demo build.
 [0.10.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.10.1
 [0.11.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.11.0
 [0.11.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.11.1
+[0.12.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.12.0
