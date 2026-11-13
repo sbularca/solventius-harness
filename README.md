@@ -168,11 +168,13 @@ Delete the ones you don't use and add your local servers.
 | `type` | Optional, skips detection: `llama-swap`, `llama.cpp`, `ollama`, `lmstudio`, `vllm`, `ninfer`, `gemini`, `anthropic`, `openai`, `generic`. |
 | `api_key_env` | The **name** of the environment variable that holds the key. Never the key itself. |
 | `key_command` | A command that prints the key, for a password manager (e.g. `op read op://Private/gemini/credential`). Runs once per session, within 15 s. |
-| `compact_at` | Compact the conversation at this prompt size (tokens). Default: 95 % of the usable context. On cloud models it caps the cost per request. |
+| `compact_at` | Compact the conversation at this prompt size (tokens). Default: 95 % of the usable context. On cloud models it caps the cost per request. A value above the usable context still applies, as long as about 1/16 of the context stays free for the answer. |
 
 - **Start-up:** each server gets 5 seconds to answer. All their models show up in `/model`.
 - **Per model** (optional): `user_models` overrides `context_size`, `max_tokens`, `compact_at` or `vision` for one model,
   or adds a model no server lists: `"user_models": [{ "id": "qwen3:8b", "context_size": 32768 }]`.
+- **Large `max_tokens`** (some models recommend 32k for thinking) is fine. solv keeps at most 1/8 of the context free for
+  the answer, and lowers `max_tokens` on a request when the conversation leaves less room.
 - **Busy servers:** on HTTP 429 or 503 it waits and tries again, up to 3 times. **Esc** stops the wait. A daily quota or a
   wait over 60 seconds gives a plain message at once.
 
@@ -222,6 +224,7 @@ All go inside `user_settings`.
 | `auto_compact` | Compact by itself near the limit. `false`: only `/compact`, and once after a "context too long" error. | `true` |
 | `compact_at` | Compact at this prompt size (tokens), for every model without its own value. | 95 % of the usable context |
 | `request_timeout` | Seconds to wait for one answer. | `600` |
+| `shell_judge_model` | Auto mode: the model that checks shell commands. Empty = the model you chat with. A model id = that model. `off` = every command that is not plainly read-only asks. On a local server with one slot, a judge call can push the chat out of the prompt cache; start the server with two slots or use a judge on another server. | `""` |
 | `system_prompt` | Instructions sent at the start of every conversation. | `You are a terse AI assistant` |
 | `show_reasoning` | Show the model's thinking text. | `false` |
 | `show_tool_response` | Show what each tool returned to the model. | `false` |
@@ -282,11 +285,15 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `Manual` | run | ask | ask |
 | `Plan` | run | blocked | blocked |
 | `Edit` | run | run | ask |
-| `Auto` (default) | run | run | run; shell commands ask unless plainly read-only |
+| `Auto` (default) | run | run | run; a judge model checks shell commands and asks you about risky ones |
 | `Full` | run | run | run, also outside the workspace |
 
 - **Read-only commands in Auto** run without asking: `git status`, `git diff`, `git log`, `ls`, `dir`, `pwd` and a few more.
-  Builds and tests ask, because they run code from the workspace. A command joined with `;`, `&&`, `|` or `>` always asks.
+- **Other shell commands in Auto** go to a judge model first (by default the model you chat with). It allows normal steps
+  for your request, like a version check, a build or a test. It asks you about deletes, installs, pushes, network access or
+  anything that does not fit. An error or an unclear answer also asks. The prompt shows the judge's reason.
+  Auto trusts the model with files in the workspace, and a command can run code the model wrote. Use `Edit` or `Manual`
+  on projects you don't trust. `shell_judge_model` picks another judge model, or `off` makes every such command ask.
 - **When it asks:** `y` allows once, `a` allows for the rest of the session, anything else refuses. For `run_shell`, `a`
   covers only that exact command. In the browser, `a` is the **Always this session** button.
 - The model knows the current mode, and is told when you change it.

@@ -5,6 +5,19 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-11-14
+
+### Added
+- Auto mode: a judge model checks shell commands that are not plainly read-only. Commands it allows run without a prompt; risky or unclear ones still ask, and the prompt shows the judge's reason. The new setting `shell_judge_model` picks the judge (empty = the session model, `off` = ask every time).
+- Setting `default_session_mode`: the session mode solv starts in (`Manual`, `Plan`, `Edit` or `Auto`, the default). `Full` cannot be saved; it starts in Auto with a warning.
+- After an update, solv says "Updated to x.y.z" once at start. The new `/changelog` command shows what changed since the version you had.
+
+### Changed
+- A large `max_tokens` (for example the 28672 that Qwen recommends) no longer halves the usable context. solv keeps at most 1/8 of the context free for the answer and lowers `max_tokens` on a request when the conversation leaves less room. A 65k model with `max_tokens` 28672 now compacts at about 51k, not 32k.
+- `compact_at` above the usable context now applies, up to the context minus 5 % and 1/16 for the answer. Before, it was ignored.
+- Skill descriptions are sent whole when the model's context has room. On a small context with many skills, long descriptions are shortened to their first sentence and their "Use when…" sentence, so the model still knows when to use them. If that is not enough, the longest skills are left out of the list; `/skills` names them, and `/<skill-name>` still loads them.
+- A skill description over 1024 characters no longer gives a warning at start; `/skills` lists it instead.
+
 ## [0.12.0] - 2026-11-13
 
 ### Added
@@ -342,3 +355,4 @@ First public demo build.
 [0.11.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.11.0
 [0.11.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.11.1
 [0.12.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.12.0
+[0.13.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.13.0
