@@ -2,10 +2,14 @@
 
 > **Freeware.** Free to use, at home or at work. No selling, no modifying. See [LICENSE](LICENSE).
 
-A terminal coding assistant for **local language models** and the **Claude**, **Gemini** and **OpenAI** APIs.
+A self-contained .NET terminal (no need for a .NET install) coding assistant for **local language models** and the **Claude**, **Gemini** and **OpenAI** APIs. It runs preinstalled from any location, USB stick included, and it is tested on low-end machines.  
+Pack it on a stick with llama.cpp and a small <=9B model configured to run on CPU/GPU and you have a small debugging assistant on the go.
 
 - You chat with a model. It reads, searches, creates and edits files in one folder you choose.
-- It runs commands after you allow them.
+- **Several safety levels:** five [session modes](#session-modes) decide what it may do without asking, from read-only to full access.
+- **Skills:** reusable instructions (`SKILL.md`) the model loads when a task needs them, or you load with `/<skill-name>`.
+- **Saved sessions:** every conversation is saved; `--resume` or `/resume` continues it later.
+- **Images:** drop or paste a screenshot, and models with vision see it.
 - The same session can also run in a browser.
 
 ## Quick install
@@ -250,6 +254,7 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/compact [focus]` | Compact now. The focus says what to keep. |
 | `/context` | Show how full the context is. |
 | `/cost` | Tokens per model this session, and the provider's cost page. |
+| `/btw <question>` | Ask a side question. The answer shows above the input and is not added to the conversation. Works while it works too. |
 | `/skills` | List the skills and whether each is loaded. |
 | `/<skill-name> [text]` | Load a skill and send it with your text. A built-in command with the same name wins. |
 | `/set-workspace <folder>` | Work in another folder, with a fresh conversation. |
@@ -273,9 +278,12 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | **↑ / ↓**, **Ctrl+R** | History, search the history |
 | `\` + **Enter** | New line |
 | **Alt+V** / **Ctrl+V** | Paste a clipboard image |
+| **Ctrl+O** | Show all of a long `/btw` answer · show less |
+| **Ctrl+X** | Close the `/btw` answer (it moves into the scrollback) |
 | **?** | Show all keys |
 
-- **Queue:** type while it works, and the message is sent next.
+- **Steering:** type while it works. The message reaches the model after its current tool calls, so you can correct it mid-task. Commands wait for the answer, except `/btw`.
+- **Stop:** typing "stop" is only a message. Press **Esc** to stop at once.
 - **Text files:** drop one on the terminal to attach it (up to 256 KB; the model gets the whole file).
 
 ### Session modes
@@ -393,7 +401,8 @@ A skill of yours with the same name replaces a built-in one.
 ## Web UI
 
 Use the same session from a browser: on this computer, a laptop on the LAN, or your phone over Tailscale. Type, attach
-files and images (📎, drop or paste), allow tools, switch model and mode, and stop an answer from either side.
+files and images (📎, drop or paste), allow tools, switch model and mode, steer, ask `/btw`, and stop an answer from
+either side. `?` in the empty text box lists the page's keys.
 
 | Command | Effect |
 |---|---|
@@ -474,11 +483,7 @@ Roughly in this order. No dates; plans change.
 
 **How it's made:**
 
-- **Written by hand:** the core (agent loop, tools, model communication, session modes, settings).
-- **AI help** (mainly Claude, some Qwen): planning, code review, all unit tests, part of the manual testing, parts of the
-  UI, the build scripts and part of the docs.
-- **Mostly written by a coding agent (Claude), reviewed by hand:** the backend layer (server detection, Gemini, Claude and
-  OpenAI), most of the web UI and the document readers (PDF, Word, Excel, OpenDocument).
+I am developer. While the core functionality is written by hand, everything else is a combination of agentic and human code. All code is manually reviewed(for real), approved, committed, pushed by hand. Every build is manually generated and tested on Windows, Linux and Intel based Mac (don't have the other). I am building this to learn how to work with local models, to understand their quirks and limitations and to optimize to the best of my abilities the agentic work results they will generate.  
 
 Third-party licences: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 

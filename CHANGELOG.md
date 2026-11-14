@@ -5,6 +5,13 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-14
+
+### Added
+- Steering: a message you send while the model works now reaches it after the current tool calls finish, so you can correct it mid-task. If the model answers without calling tools, the message is sent after the answer, as before. Commands (`/…`) still wait for the turn to end. Works in the terminal and the browser.
+- `/btw <question>`: ask a side question without adding it to the conversation. It works while the model works too, after its current tool calls. The answer stays above the input (16 rows; Ctrl+O shows all of a longer one) until you press Ctrl+X or send your next message, then it moves into the scrollback. In the browser it has a × button.
+- Web UI: `?` in the empty text box lists the page's keys, like `?` in the terminal.
+
 ## [0.13.0] - 2026-11-14
 
 ### Added
@@ -356,3 +363,4 @@ First public demo build.
 [0.11.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.11.1
 [0.12.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.12.0
 [0.13.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.13.0
+[0.14.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.0
