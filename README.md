@@ -65,6 +65,7 @@ game development tools in mind for later. The source code may follow; for now th
 - [Web UI](#web-ui)
 - [Tools](#tools)
 - [Troubleshooting](#troubleshooting)
+- [Exceptions](#exceptions)
 - [Roadmap](#roadmap)
 
 ## Requirements
@@ -457,6 +458,21 @@ either side. `?` in the empty text box lists the page's keys.
 | `Permission denied` (Linux / macOS) | `chmod +x solv` |
 | Web search fails, or the model has no `web_search` | No `search_providers`, the server is down, or SearXNG lacks `json`. Try `/setup search`. |
 | A bug to report | Set `"enable_logging": true`, repeat it, and attach the files from `.solv/logs/` with the `solv --selftest` output. |
+
+[↑ Back to contents](#contents)
+
+## Exceptions
+
+**Some small models cannot sustain long agentic loops.** They work for short tasks, but in a long session they eventually fail. Seen with LFM2.5-8B-A1B (about 1B active parameters):
+
+- After many tool calls, the model stops calling tools. It writes a plan as JSON text instead (for example `{"plan": …, "commands": […]}`), and nothing runs.
+- Once one such reply is in the conversation, the model copies it. Later messages such as "continue" do not help.
+- It repeats the same failing command without progress.
+
+**What to do:**
+
+1. Keep sessions short: one small task per session.
+2. When the model breaks like this, start a new session (`/reset`, or restart `solv`). Do not try to talk it out of the loop.
 
 [↑ Back to contents](#contents)
 
