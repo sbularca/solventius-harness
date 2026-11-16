@@ -236,7 +236,7 @@ All go inside `user_settings`.
 | `check_for_updates` | At start, tell you when a newer release is out. At most 20 checks a day; offline it stays quiet. | `true` |
 | `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Attach them to bug reports. | `false` |
 | `cleanup_period_days` | Delete saved sessions and logs not used for this many days, at start. `0` = keep forever. | `30` |
-| `notify_after_seconds` | Ring the terminal bell when an answer ends or a prompt waits, if this many seconds passed since your last input. `0` = never. | `30` |
+| `notify_after_seconds` | Ring the terminal bell when an answer ends or a prompt waits, if this many seconds passed since your last input. Not inside herdr (herdr has its own bell). `0` = never. | `30` |
 
 [↑ Back to contents](#contents)
 
