@@ -5,6 +5,24 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.14.1] - 2026-11-16
+
+### Added
+- The footer under the input shows the thinking setting for the current model, next to the mode (`think: default`, `think: off`, `think: high`, …). The browser shows it in the header. `default` means the harness sends no setting and the server decides.
+
+### Changed
+- One message now allows at most 200 model replies, down from 1000. A model stuck in a loop stops sooner. At the limit, the model gives a final answer with what it found. Type "continue" to go on.
+- Auto mode asks less often for ordinary commands inside the workspace. The shell judge now rates only the command itself. It no longer counts other steps of your request against the command, or the order in which the model works.
+
+### Fixed
+- Pressing Esc during a long task no longer makes the model forget the task. Before, Esc removed the whole turn from the conversation, your request included, while the files it changed stayed changed. Now the work so far stays, and the model is told that you stopped it. Type "continue" to go on.
+- Switching models with `/model` no longer sends the earlier model's reasoning to the new model. Small models (for example LFM2.5) read it as their own and started writing plans as JSON instead of calling tools. The conversation itself is kept.
+- The shell judge no longer gives "judge reply was cut off" so often with models that always think (for example LFM2.5). Its reply limit is now 2048 tokens instead of 512.
+- A tool call with broken arguments (for example a raw line break inside a file's content) no longer breaks the rest of the session with "HTTP 500: Failed to parse tool call arguments as JSON" on llama.cpp. The model still gets the error and can retry.
+
+### Known issues
+- Some small models (for example LFM2.5-8B-A1B) cannot sustain long agentic loops. After many tool calls they write plans as JSON instead of calling tools, and keep doing it. Keep sessions short, and start a new one when this happens. See Exceptions in the README.
+
 ## [0.14.0] - 2026-11-14
 
 ### Added
@@ -364,3 +382,4 @@ First public demo build.
 [0.12.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.12.0
 [0.13.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.13.0
 [0.14.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.0
+[0.14.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.1
