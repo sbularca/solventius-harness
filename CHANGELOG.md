@@ -5,6 +5,12 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.14.3] - 2026-11-16
+
+### Changed
+- Inside herdr, solv no longer rings its own bell. herdr already notifies you, so you got two.
+- The built-in `solv-guide` skill knows every command, input feature (`@` mentions, `!command`) and setting. Ask the model "how do I…" about solv, or what a setting does and what may not go in `settings.json` (API keys).
+
 ## [0.14.2] - 2026-11-16
 
 ### Added
@@ -397,3 +403,4 @@ First public demo build.
 [0.14.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.0
 [0.14.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.1
 [0.14.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.2
+[0.14.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.3
