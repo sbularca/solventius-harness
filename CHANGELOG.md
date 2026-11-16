@@ -5,6 +5,19 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.14.2] - 2026-11-16
+
+### Added
+- `/auto-compact on|off|reset` turns auto-compaction on or off for the current model. The choice is saved per model and overrides the `auto_compact` setting. `reset` goes back to that setting.
+- `@` mentions: type `@` and a workspace path (Tab completes it), and the file goes to the model with your message.
+- `!command` runs a shell command yourself, without the model and without asking. The output goes to the model with your next message. Plan mode refuses it.
+- `/export [file]` saves the conversation as Markdown in the workspace.
+- The terminal bell rings when a turn ends or a prompt waits, if 30 seconds passed since your last input. Change or turn it off with the new setting `notify_after_seconds`.
+- Built-in skill `init`: `/init` makes the model explore the workspace and write a short `AGENTS.md`. An existing file is not replaced without asking.
+
+### Fixed
+- The "Compacted X -> Y tokens" line now ends at the same size the footer shows. Before, Y was far too high (for example 45k when the context held 16k).
+
 ## [0.14.1] - 2026-11-16
 
 ### Added
@@ -383,3 +396,4 @@ First public demo build.
 [0.13.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.13.0
 [0.14.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.0
 [0.14.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.1
+[0.14.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.2

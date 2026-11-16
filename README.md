@@ -226,7 +226,7 @@ All go inside `user_settings`.
 
 | Key | Meaning | Default |
 |---|---|---|
-| `auto_compact` | Compact by itself near the limit. `false`: only `/compact`, and once after a "context too long" error. | `true` |
+| `auto_compact` | Compact by itself near the limit. `false`: only `/compact`, and once after a "context too long" error. `/auto-compact` changes it per model. | `true` |
 | `compact_at` | Compact at this prompt size (tokens), for every model without its own value. | 95 % of the usable context |
 | `request_timeout` | Seconds to wait for one answer. | `600` |
 | `shell_judge_model` | Auto mode: the model that checks shell commands. Empty = the model you chat with. A model id = that model. `off` = every command that is not plainly read-only asks. On a local server with one slot, a judge call can push the chat out of the prompt cache; start the server with two slots or use a judge on another server. | `""` |
@@ -236,6 +236,7 @@ All go inside `user_settings`.
 | `check_for_updates` | At start, tell you when a newer release is out. At most 20 checks a day; offline it stays quiet. | `true` |
 | `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Attach them to bug reports. | `false` |
 | `cleanup_period_days` | Delete saved sessions and logs not used for this many days, at start. `0` = keep forever. | `30` |
+| `notify_after_seconds` | Ring the terminal bell when an answer ends or a prompt waits, if this many seconds passed since your last input. `0` = never. | `30` |
 
 [↑ Back to contents](#contents)
 
@@ -253,6 +254,8 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/session-mode <mode>` | Change when it asks (see [Session modes](#session-modes)). |
 | `/thinking <on\|off\|level\|reset>` | Thinking on or off, or its level. Saved per model. |
 | `/compact [focus]` | Compact now. The focus says what to keep. |
+| `/auto-compact [on\|off\|reset]` | Compacting by itself on or off for this model. Saved per model. `reset` = use `auto_compact`. |
+| `/export [file]` | Save the conversation as Markdown in the workspace (default `solv-<id>.md`). Tool results are cut. |
 | `/context` | Show how full the context is. |
 | `/cost` | Tokens per model this session, and the provider's cost page. |
 | `/btw <question>` | Ask a side question. The answer shows above the input and is not added to the conversation. Works while it works too. |
@@ -286,6 +289,9 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 - **Steering:** type while it works. The message reaches the model after its current tool calls, so you can correct it mid-task. Commands wait for the answer, except `/btw`.
 - **Stop:** typing "stop" is only a message. Press **Esc** to stop at once.
 - **Text files:** drop one on the terminal to attach it (up to 256 KB; the model gets the whole file).
+- **`@` mentions:** type `@` and a path in the workspace, e.g. `explain @src/main.cs`. **Tab** completes it. The model gets the file with your message.
+- **`!` commands:** `!git status` runs the command yourself, without the model and without asking. The output goes to the model with your next message. Not in Plan mode.
+- **Bell:** after a long answer, or when it waits for you, the terminal bell rings (see `notify_after_seconds`).
 
 ### Session modes
 
@@ -379,6 +385,7 @@ A skill is a set of instructions the model loads only when it needs them. It add
 | `solv-guide` | The model answers questions about solv itself: commands, modes, skills, settings. |
 | `skill-creator` | The model writes or improves a skill. Ask "make a skill for writing release notes". |
 | `handoff` | The model writes `HANDOFF.md` in the workspace, so a fresh session can continue the work. Type `/handoff [what the next session is for]`. It replaces an old `HANDOFF.md`. |
+| `init` | The model explores the workspace and writes a short `AGENTS.md`: build and test commands, layout, code rules. Type `/init [extra wishes]`. It asks before changing an existing file. |
 
 A skill of yours with the same name replaces a built-in one.
 
