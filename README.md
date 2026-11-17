@@ -131,6 +131,9 @@ curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/in
   `/setup preferences` and `/setup search` ask only those questions.
 - **Skip it:** press Enter on an empty answer. You get a default `settings.json` to fill in by hand.
 
+> Tip - Once a model running, Solventius has an embded guide whth self-knowledge. Want something modified in settings?
+> Just ask the model to do it for you.
+
 **By hand:** edit `.solv/settings.json` next to the program. Your settings go under `user_settings`. Leave `app_state`
 alone; the app writes it.
 
