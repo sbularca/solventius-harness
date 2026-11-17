@@ -5,32 +5,6 @@
 A self-contained .NET terminal (no need for a .NET install) coding assistant for **local language models** and the **Claude**, **Gemini** and **OpenAI** APIs. It runs preinstalled from any location, USB stick included, and it is tested on low-end machines.  
 Pack it on a stick with llama.cpp and a small <=9B model configured to run on CPU/GPU and you have a small debugging assistant on the go.
 
-- You chat with a model. It reads, searches, creates and edits files in one folder you choose.
-- **Several safety levels:** five [session modes](#session-modes) decide what it may do without asking, from read-only to full access.
-- **Skills:** reusable instructions (`SKILL.md`) the model loads when a task needs them, or you load with `/<skill-name>`.
-- **Saved sessions:** every conversation is saved; `--resume` or `/resume` continues it later.
-- **Images:** drop or paste a screenshot, and models with vision see it.
-- The same session can also run in a browser.
-
-## Quick install
-
-**Windows** (PowerShell):
-
-```powershell
-irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.ps1 | iex
-```
-
-**Linux / macOS:**
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh
-```
-
-Then open a new terminal and follow [Configure](#configure). Update later with `solv --update`. Choose the folder or install by hand: [Install](#install).
-
-You can also **[download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** as a zip.
-See what changed in the [changelog](CHANGELOG.md).
-
 **Why this one**
 
 - **Built for local models:** shorter tool results on small contexts (32k or less), file reads sized to the context, automatic compaction.
@@ -54,6 +28,25 @@ game development tools in mind for later. The source code may follow; for now th
 - **Web UI:** the same session in a browser, also from your phone.
 - **Project rules:** an `AGENTS.md` in the project, plus one for all projects.
 - **[herdr](https://herdr.dev) support:** in a herdr pane it reports idle, working or blocked. Nothing to set up.
+
+## Quick install
+
+**Windows** (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.ps1 | iex
+```
+
+**Linux / macOS:**
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh
+```
+
+Then open a new terminal and follow [Configure](#configure). Update later with `solv --update`. Choose the folder or install by hand: [Install](#install).
+
+You can also **[download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** as a zip.
+See what changed in the [changelog](CHANGELOG.md).
 
 ## Contents
 
