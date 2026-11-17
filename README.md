@@ -7,7 +7,7 @@ Pack it on a stick with llama.cpp and a small <=9B model configured to run on CP
 
 **Why this one**
 
-- **Built for local models:** shorter tool results on small contexts (32k or less), file reads sized to the context, automatic compaction.
+- **Built for local models:** shorter tool results on small contexts (32k or less), file reads sized to the context, automatic smart compaction.
 - **Light:** one file, a low CPU and memory footprint. The machine stays free for the model.
 - **Little setup:** the first start finds your local server or takes an API key. It detects the server type, lists the models and reads their context size.
 - **No cloud account needed.**
