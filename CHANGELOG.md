@@ -5,6 +5,32 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-18
+
+### Added
+- `solv --update nightly` and `/update nightly` install the newest test build. The normal update and the start-up check still offer only releases.
+- Searches (`grep`, `glob`, `list_dir`, `@` completion) skip what your project's ignore files list: `.gitignore`, Plastic SCM / Unity Version Control `ignore.conf`, `.p4ignore`, `.tfignore`, `.hgignore`, `.bzrignore`, Fossil `ignore-glob`, `.ignore`, `.rgignore`. In a Unity project, searches no longer walk `Library`; a glob that took about 3 s now takes about 0.3 s. Search results name the folders they skipped, and the model can still search one by giving it as the path.
+- Optional `.solv/.ignore` (in the workspace, or next to the program for all projects) blocks folders or files from the model: hidden from searches and refused by every file tool, for reading and writing. `run_shell` is not blocked.
+
+### Changed
+- `shell_judge_model` is now `classifier_model`. The old name still works when the new one is empty, with a warning at start. Texts say "classifier" instead of "judge".
+- `classifier_model` set to a different model (for example a small one on another server) now also writes session titles, checks all shell commands of one reply at the same time, and is loaded in the background at start. If it is not found or fails, solv warns once and uses the session model.
+- The model is asked to request independent reads and searches in one reply, and OpenAI-style servers get `parallel_tool_calls`, so answers take fewer steps. Turn it off with `batch_tool_calls`, or per model with `parallel_tool_calls` in `user_models`. A server that rejects the field gets it turned off for that model until restart.
+- `glob` with a fixed folder at the start of the pattern (`Assets/**/*.cs`) only walks that folder.
+- With an ignore file in the workspace, the built-in skip list (`bin`, `obj`, `node_modules`, …) no longer applies; only `.git`, `.hg`, `.svn`, `.plastic` and `.solv` are always skipped.
+- Tool calls now show live in a small window above the input. When the run ends, the conversation keeps one line, such as `● read 3 files · searched 2 patterns · 1 failed`. Edit and create diffs and delete calls still show in full. Ctrl+O prints the last tool run in full.
+- `ask_user_question` shows a picker above the input: ↑/↓ or a number to choose, Space to tick in multi-select, "Type something…" for your own answer, Esc to skip. The raw tool-call line is gone, and the conversation keeps the question and your answer.
+- The output re-flows when you resize the terminal window. The last 200 blocks are drawn again at the new width.
+- The input box shows the workspace folder and the git branch at the right end of its top line.
+- The footer shows context use as a bar (`▰▰▰▱▱▱▱▱▱▱ 31%`). The stats line after an answer still has the full numbers.
+- Your message in the conversation has one rule above it, not one above and one below.
+- The input line wraps at word boundaries: a word that does not fit moves to the next line instead of being cut. A word longer than the line is still split.
+- In test builds (nightly, dev), the stats line after an answer shows the model steps and where the time went: `4 steps · 7 tools · model 10.1 s · tool time 0.8 s`, plus `check …` when the shell judge ran. With `enable_logging`, the log gets the same numbers per turn, including tool calls per step and the time per tool.
+
+### Fixed
+
+- The shell judge now shows its reason when the model writes it on the line after ALLOW or ASK, instead of "judge is not sure".
+
 ## [0.14.3] - 2026-11-16
 
 ### Changed
@@ -404,3 +430,4 @@ First public demo build.
 [0.14.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.1
 [0.14.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.2
 [0.14.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.3
+[0.15.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.15.0
