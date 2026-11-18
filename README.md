@@ -92,6 +92,8 @@ Open a new terminal afterwards. Updates keep your `.solv` folder.
 
 **Update:** `solv --update` (or `/update` in a session) downloads the latest release, checks its SHA-256 and replaces the program; start solv again afterwards. It also adds the folder to `PATH` if it is not there yet. At start, solv tells you when a new version is out (turn this off with `check_for_updates`). Running the install command again also updates.
 
+**Nightly test builds:** `solv --update nightly` (or `/update nightly`) installs the newest build, including test builds published as GitHub pre-releases. They can have bugs. The normal update and the start-up check never offer them; the next release replaces a nightly with a normal `solv --update`.
+
 **Choose the install folder:** set `SOLV_INSTALL_DIR`. Use the same folder for every update; it must be a folder of its own
 that your user can write to (not `Program Files`, `/usr/local/bin` or `~/.local/bin`).
 
@@ -172,7 +174,7 @@ Delete the ones you don't use and add your local servers.
 | `compact_at` | Compact the conversation at this prompt size (tokens). Default: 95 % of the usable context. On cloud models it caps the cost per request. A value above the usable context still applies, as long as about 1/16 of the context stays free for the answer. |
 
 - **Start-up:** each server gets 5 seconds to answer. All their models show up in `/model`.
-- **Per model** (optional): `user_models` overrides `context_size`, `max_tokens`, `compact_at` or `vision` for one model,
+- **Per model** (optional): `user_models` overrides `context_size`, `max_tokens`, `compact_at`, `vision` or `parallel_tool_calls` for one model,
   or adds a model no server lists: `"user_models": [{ "id": "qwen3:8b", "context_size": 32768 }]`.
 - **Large `max_tokens`** (some models recommend 32k for thinking) is fine. solv keeps at most 1/8 of the context free for
   the answer, and lowers `max_tokens` on a request when the conversation leaves less room.
@@ -225,7 +227,8 @@ All go inside `user_settings`.
 | `auto_compact` | Compact by itself near the limit. `false`: only `/compact`, and once after a "context too long" error. `/auto-compact` changes it per model. | `true` |
 | `compact_at` | Compact at this prompt size (tokens), for every model without its own value. | 95 % of the usable context |
 | `request_timeout` | Seconds to wait for one answer. | `600` |
-| `shell_judge_model` | Auto mode: the model that checks shell commands. Empty = the model you chat with. A model id = that model. `off` = every command that is not plainly read-only asks. On a local server with one slot, a judge call can push the chat out of the prompt cache; start the server with two slots or use a judge on another server. | `""` |
+| `classifier_model` | A model for side jobs. Auto mode: it checks shell commands. Empty = the model you chat with. A model id = that model. `off` = every command that is not plainly read-only asks. A different model (for example a small one on another server) also writes session titles and checks all shell commands of one reply at the same time, so the main model only does the main work. If it is not found or fails, solv warns once and uses the model you chat with. On a local server with one slot, a check on the chat model can push the chat out of the prompt cache; start the server with two slots or use a classifier on another server. The old name `shell_judge_model` still works. | `""` |
+| `batch_tool_calls` | Ask the model to request independent reads and searches in one reply, so answers take fewer steps. If a server rejects the `parallel_tool_calls` field, solv turns it off for that model until restart. `parallel_tool_calls` in `user_models` sets it per model. | `true` |
 | `system_prompt` | Instructions sent at the start of every conversation. | `You are a terse AI assistant` |
 | `show_reasoning` | Show the model's thinking text. | `false` |
 | `show_tool_response` | Show what each tool returned to the model. | `false` |
@@ -241,7 +244,7 @@ All go inside `user_settings`.
 Open a terminal **in your project folder** and type `solv`. That folder is the workspace.
 
 - The prompt shows the mode and the model.
-- After each answer, one line shows the time, the tokens and how full the context is.
+- After each answer, one line shows the time, the tokens, how full the context is, the model steps and tool calls, and the time spent in the model and in tools.
 - Near the limit it compacts by itself: old tool results shrink to notes, older turns become a summary, the last 2 turns stay.
 
 | Command | Effect |
@@ -261,12 +264,12 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/web [start\|open]` | Show the web UI address · start it now · open it in the browser. |
 | `/setup [target]` | Connect a model server or API, or change `preferences` or the `search` server (see [Configure](#configure)). |
 | `/approvals` | List what you allowed with `a` (always) this session. |
-| `/update` | Install the latest release. Start solv again to use it. |
+| `/update [nightly]` | Install the latest release. `nightly` = the newest test build. Start solv again to use it. |
 | `/revoke <n\|tool\|all>` | Ask again before a tool or command allowed with `a`. |
 | `/resume [n\|id]` | List the saved conversations, or switch to one. `/continue` switches to the most recent. |
 | `/reset`, `/help`, `/exit` | Fresh conversation (also clears the `a` approvals) · all commands · quit (shows how to resume). |
 
-**Arguments:** `--resume [id]` (no id: list saved conversations), `--continue` (the most recent), `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update`, `--help`.
+**Arguments:** `--resume [id]` (no id: list saved conversations), `--continue` (the most recent), `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update [nightly]`, `--help`.
 
 **Saved conversations:** every conversation is saved after each answer in `.solv/history/`. `solv --resume <id>` continues it, in its workspace. Inside herdr, the pane comes back in the same conversation after a herdr restart (needs `solv` on PATH).
 
@@ -296,15 +299,15 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `Manual` | run | ask | ask |
 | `Plan` | run | blocked | blocked |
 | `Edit` | run | run | ask |
-| `Auto` (default) | run | run | run; a judge model checks shell commands and asks you about risky ones |
+| `Auto` (default) | run | run | run; a classifier model checks shell commands and asks you about risky ones |
 | `Full` | run | run | run, also outside the workspace |
 
 - **Read-only commands in Auto** run without asking: `git status`, `git diff`, `git log`, `ls`, `dir`, `pwd` and a few more.
-- **Other shell commands in Auto** go to a judge model first (by default the model you chat with). It allows normal steps
+- **Other shell commands in Auto** go to a classifier model first (by default the model you chat with). It allows normal steps
   for your request, like a version check, a build or a test. It asks you about deletes, installs, pushes, network access or
-  anything that does not fit. An error or an unclear answer also asks. The prompt shows the judge's reason.
+  anything that does not fit. An error or an unclear answer also asks. The prompt shows the classifier's reason.
   Auto trusts the model with files in the workspace, and a command can run code the model wrote. Use `Edit` or `Manual`
-  on projects you don't trust. `shell_judge_model` picks another judge model, or `off` makes every such command ask.
+  on projects you don't trust. `classifier_model` picks another model, or `off` makes every such command ask.
 - **When it asks:** `y` allows once, `a` allows for the rest of the session, anything else refuses. For `run_shell`, `a`
   covers only that exact command. In the browser, `a` is the **Always this session** button.
 - The model knows the current mode, and is told when you change it.
@@ -441,6 +444,21 @@ either side. `?` in the empty text box lists the page's keys.
 | `ask_user_question` | Ask you one question with 2 to 4 options. Type a number or your own answer; an empty reply or `skip` skips it. |
 | `use_skill` | Load a skill, or read one of its extra files. Only there when skills exist. |
 
+**What searches skip.** `grep`, `glob`, `list_dir` and `@` completion skip what your project's ignore files list (read from the workspace root):
+
+- `.gitignore`, `ignore.conf` (Plastic SCM / Unity Version Control), `.p4ignore` (Perforce), `.tfignore` (TFVC), `.hgignore` (Mercurial), `.bzrignore` (Bazaar), `.fossil-settings/ignore-glob` (Fossil), `.ignore`, `.rgignore`.
+- Without any of these files, `bin`, `obj`, `node_modules`, `dist`, `build` and similar folders are skipped.
+- `.git`, `.hg`, `.svn`, `.plastic` and `.solv` are always skipped.
+- A skipped folder is still searched when the model gives it as the path. Search results name the folders they skipped.
+- Not read yet: ignore files in subfolders, git's global ignore file.
+
+**Block folders or files from the model.** Create `.solv/.ignore` in the workspace (this project) or next to the program (all projects):
+
+- It uses `.gitignore` rules, one per line, for example `secrets/` or `*.pem`.
+- A matching path is hidden from searches and listings, and every file tool refuses to read or write it.
+- The model cannot read or change the workspace `.solv/.ignore`. Both files are optional; solv never creates them.
+- `run_shell` is not blocked, so the model could still `cat` a file. After a refused path, the next `run_shell` asks you first.
+
 [↑ Back to contents](#contents)
 
 ## Troubleshooting
@@ -489,6 +507,7 @@ Roughly in this order. No dates; plans change.
 - **Bundled local model:** start without a model server or an API key.
 - **Memory:** remember facts across sessions.
 - **Sub-agents:** hand a self-contained task to a fresh agent with its own context.
+- **Speed:** read-only tools (reads, searches, web pages) run at the same time.
 - **Native builds on Linux and macOS:** faster start-up and a smaller footprint, as on Windows already.
 
 [↑ Back to contents](#contents)
