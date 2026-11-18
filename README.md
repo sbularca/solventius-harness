@@ -281,7 +281,7 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | **↑ / ↓**, **Ctrl+R** | History, search the history |
 | `\` + **Enter** | New line |
 | **Alt+V** / **Ctrl+V** | Paste a clipboard image |
-| **Ctrl+O** | Show all of a long `/btw` answer · show less |
+| **Ctrl+O** | Show the last tool run in full · with `/btw` open: show all / less |
 | **Ctrl+X** | Close the `/btw` answer (it moves into the scrollback) |
 | **?** | Show all keys |
 
@@ -290,6 +290,9 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 - **Text files:** drop one on the terminal to attach it (up to 256 KB; the model gets the whole file).
 - **`@` mentions:** type `@` and a path in the workspace, e.g. `explain @src/main.cs`. **Tab** completes it. The model gets the file with your message.
 - **`!` commands:** `!git status` runs the command yourself, without the model and without asking. The output goes to the model with your next message. Not in Plan mode.
+- **Tool calls:** they show live above the input while the model works. The conversation keeps one line per run (`● read 3 files · searched 2 patterns`) plus any edit diffs. **Ctrl+O** prints the last run in full.
+- **Questions from the model:** pick with **↑ / ↓** or a number, **Space** ticks in multi-select, **Enter** sends, **Esc** skips, or choose "Type something…" to answer in your own words.
+- **Resize:** the output re-flows to the new window width.
 - **Bell:** after a long answer, or when it waits for you, the terminal bell rings (see `notify_after_seconds`).
 
 ### Session modes
