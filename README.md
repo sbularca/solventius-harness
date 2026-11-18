@@ -249,7 +249,7 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 
 | Command | Effect |
 |---|---|
-| `/model [n\|id]` | List the models by server, or switch. The pick is kept for the next start. |
+| `/model [n\|id]` | List the models by server, or switch. The pick is kept for the next start. While sub-agents run, the switch waits until they finish. |
 | `/session-mode <mode>` | Change when it asks (see [Session modes](#session-modes)). |
 | `/thinking <on\|off\|level\|reset>` | Thinking on or off, or its level. Saved per model. |
 | `/compact [focus]` | Compact now. The focus says what to keep. |
@@ -445,7 +445,7 @@ either side. `?` in the empty text box lists the page's keys.
 | `web_search` | Search the web (optional, see [Web search](#web-search-optional)). |
 | `web_fetch` | Read one public web page as text. Refuses local and private addresses, and does not use a system proxy. |
 | `ask_user_question` | Ask you one question with 2 to 4 options. Type a number or your own answer; an empty reply or `skip` skips it. |
-| `spawn_agent` | Hand a self-contained task to a sub-agent with its own empty context; only its summary comes back. You can name a model for the task. A model on the same machine as the active one asks first. Alt+Shift+1…9 stops it. |
+| `spawn_agent` | Hand a self-contained task to a sub-agent with its own empty context. Sub-agents run in the background, several at once, while you keep working; each summary comes back as a message when it is done. When one starts, solv asks once whether it may do things that need your approval. You can name a model for the task. A model on the same machine as the active one asks first. Alt+Shift+1…9 stops it. |
 | `use_skill` | Load a skill, or read one of its extra files. Only there when skills exist. |
 
 **What searches skip.** `grep`, `glob`, `list_dir` and `@` completion skip what your project's ignore files list (read from the workspace root):
