@@ -445,6 +445,7 @@ either side. `?` in the empty text box lists the page's keys.
 | `web_search` | Search the web (optional, see [Web search](#web-search-optional)). |
 | `web_fetch` | Read one public web page as text. Refuses local and private addresses, and does not use a system proxy. |
 | `ask_user_question` | Ask you one question with 2 to 4 options. Type a number or your own answer; an empty reply or `skip` skips it. |
+| `spawn_agent` | Hand a self-contained task to a sub-agent with its own empty context; only its summary comes back. You can name a model for the task. A model on the same machine as the active one asks first. Alt+Shift+1…9 stops it. |
 | `use_skill` | Load a skill, or read one of its extra files. Only there when skills exist. |
 
 **What searches skip.** `grep`, `glob`, `list_dir` and `@` completion skip what your project's ignore files list (read from the workspace root):
@@ -509,7 +510,6 @@ Roughly in this order. No dates; plans change.
 - **Extensions:** MCP servers as extra tools.
 - **Bundled local model:** start without a model server or an API key.
 - **Memory:** remember facts across sessions.
-- **Sub-agents:** hand a self-contained task to a fresh agent with its own context.
 - **Speed:** read-only tools (reads, searches, web pages) run at the same time.
 - **Native builds on Linux and macOS:** faster start-up and a smaller footprint, as on Windows already.
 
