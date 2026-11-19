@@ -5,6 +5,38 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-11-19
+
+### Added
+- The start box shows the context size and where it came from: `(server)`, `(settings)` or `(default)`. Switching the model shows it once.
+- Sub-agents: the model can hand a self-contained task to a sub-agent (`spawn_agent`). Sub-agents run in the background, several at once: you keep working with the main model, and each summary (with the files it changed) comes back as a message when it is done. If you are idle then, the main model reads it and answers by itself. Its reads and searches stay out of your conversation. It runs under the same session mode. Edits to one file by several agents (or an agent and the main model) never overwrite each other: they take turns, and an edit whose text another one changed fails so the agent reads the file again. You can ask for a specific model for the task; simple tasks go to your `classifier_model` when one is set. The model starts at most 5 on its own per request; when you ask for sub-agents, there is no limit, but at most 16 run at once. In a turn that a sub-agent result started, the model cannot lift the limit of 5 by itself.
+- Esc stops the main turn but not the sub-agents. `/clear`, resume and exit stop them; exit waits up to 5 seconds so their shell commands end.
+- Sub-agents clean up after themselves: they are told to delete their scratch files, their saved shell output in `.solv/temp` is deleted when they finish, and new files they leave behind are listed in the result so the main model can ask you about them.
+- In the plain console and `--web-only`, solv tells you when a sub-agent finishes; its result goes to the model with your next message.
+- A sub-agent on a model on the same machine as the active one asks first, because the machine may not run both. Answer **Yes, and never ask again this session** if yours can.
+- Alt+Shift+1…9 stops a running sub-agent; the panel below the input shows it.
+- `solv --web-only` quits by itself after 30 minutes with no browser open while it waits for you (setting `web_idle_minutes`, 0 = never). It never quits during a turn or while a sub-agent runs or has a result waiting. The conversation stays saved: `solv --resume` opens it again.
+- Web UI: a **Settings** window (☰ → All settings…) with tabs for models, servers, behaviour, safety, web search, and help & updates. Add, edit and remove your own models; remove servers; add a server or change a key through the setup steps. API keys never show. **Restart solv** (for `--web-only`) quits and starts again with the same conversation so saved settings apply. A few technical settings stay in `settings.json` only.
+- **Memory.** Ask solv to remember something, globally (every workspace, next to `solv.exe`) or for this workspace (`<workspace>/.solv/memory`); when you don't say which, it asks. `MEMORY.md` is the index; memories are in small files (`memory_file_tokens`, default 1000), and the model reads one only when its title fits the task. Same title = update; "forget" deletes. Settings `memory` and `memory_file_tokens`, also in the web Settings window.
+- Web UI: file links and file paths in answers open the file in a viewer in the page (formatted Markdown, coloured code). Only workspace files; `.solv/.ignore` applies.
+- Web UI: a long message no longer reaches past the chat column; scrollbars are dark.
+- Web UI: **Quit** moved from the top bar to the bottom of the ☰ menu.
+- Web UI: a **☰** menu has every command as a button, in plain words, with small windows to type or pick values (saved conversations, thinking level, setup, folders). The model's questions with options (`ask_user_question`) show as buttons, and the model's latest thought line shows next to the busy timer.
+- Completion for `/sub-agents` (on, off), `/update` (nightly) and `/revoke` (the numbered allowed actions, with what each one is).
+- Web UI: an **Agents** button opens a side panel with one tab per sub-agent: its task, the tool it runs, a **Stop** button and its live log. It works from a phone or another computer too.
+- `/sub-agents on|off` (setting `sub_agents`) turns sub-agents off and on. Off, the model does not see the `spawn_agent` tool at all.
+- Live sub-agent logs: Alt+1…9 (or `/agent-log <number>`) opens a sub-agent's tool calls, results and answer in a new console window that follows them as they happen. `/agent-log` lists the logs. solv deletes them at exit unless `enable_logging` is on.
+- `/model` (or a model picked in `/setup`) while sub-agents run waits until they finish, then switches; solv tells you both times.
+- When a sub-agent starts, solv asks once whether it may do things that need your approval (edits, risky commands); **a** allows it for every sub-agent this session. This never covers writing a global skill, a shell command the classifier refused, or a shell command after a refused path. In Auto mode without a `classifier_model`, a sub-agent's shell commands that need a check are refused. A running sub-agent never asks you anything: what you did not allow, and questions, come back as proposals that the main model asks you about.
+
+### Removed
+- The `role` field of a model in `user_models`. Nothing used it; old settings files that have it still load.
+
+### Fixed
+- A finished sub-agent could stay in the terminal's agent line and the web Agents panel: when its clean-up failed (it also gave no result), or when two status updates arrived in the wrong order.
+- The web page's Quit window said the conversation is not saved. It is saved after every answer; the window now says so.
+- Two shell commands that run at the same time no longer save their long output to the same `.solv/temp` file.
+
 ## [0.15.0] - 2026-11-18
 
 ### Added
@@ -431,3 +463,4 @@ First public demo build.
 [0.14.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.2
 [0.14.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.3
 [0.15.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.15.0
+[0.16.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.0
