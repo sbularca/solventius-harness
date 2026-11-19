@@ -235,6 +235,7 @@ All go inside `user_settings`.
 | `check_for_updates` | At start, tell you when a newer release is out. At most 20 checks a day; offline it stays quiet. | `true` |
 | `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Attach them to bug reports. | `false` |
 | `cleanup_period_days` | Delete saved sessions and logs not used for this many days, at start. `0` = keep forever. | `30` |
+| `sub_agents` | `false` = the model cannot start sub-agents. `/sub-agents on\|off` switches it. | `true` |
 | `notify_after_seconds` | Ring the terminal bell when an answer ends or a prompt waits, if this many seconds passed since your last input. Not inside herdr (herdr has its own bell). `0` = never. | `30` |
 
 [↑ Back to contents](#contents)
@@ -257,6 +258,8 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/export [file]` | Save the conversation as Markdown in the workspace (default `solv-<id>.md`). Tool results are cut. |
 | `/context` | Show how full the context is. |
 | `/cost` | Tokens per model this session, and the provider's cost page. |
+| `/sub-agents [on\|off]` | Allow or forbid sub-agents. Saved in `settings.json`. |
+| `/agent-log [n]` | Open a sub-agent's live log in a new window (its tool calls and results as they happen). No number lists the logs. |
 | `/btw <question>` | Ask a side question. The answer shows above the input and is not added to the conversation. Works while it works too. |
 | `/skills` | List the skills and whether each is loaded. |
 | `/<skill-name> [text]` | Load a skill and send it with your text. A built-in command with the same name wins. |
@@ -283,6 +286,7 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | **Alt+V** / **Ctrl+V** | Paste a clipboard image |
 | **Ctrl+O** | Show the last tool run in full · with `/btw` open: show all / less |
 | **Ctrl+X** | Close the `/btw` answer (it moves into the scrollback) |
+| **Alt+1…9** | Open that sub-agent's live log in a new window |
 | **?** | Show all keys |
 
 - **Steering:** type while it works. The message reaches the model after its current tool calls, so you can correct it mid-task. Commands wait for the answer, except `/btw`.
@@ -418,7 +422,11 @@ either side. `?` in the empty text box lists the page's keys.
 |---|---|
 | `solv --web` | Print the address, for example `http://localhost:8787/my-project/?t=<token>`. Open it once with `?t=`, then bookmark the clean address. |
 | `/web start` | Turn it on later in a running session. |
-| `solv --web-only` | Run the session **hidden in the background** and open the page. The page's **Quit** button stops it. |
+| `solv --web-only` | Run the session **hidden in the background** and open the page. **Quit solv** in the page's ☰ menu stops it. With no browser open for 30 minutes while it waits for you, it quits by itself (`web_idle_minutes`); `solv --resume` opens the conversation again. |
+| **☰** menu | Every command as a button, with small windows for values (pick a saved conversation, a thinking level, a folder). Made for people who do not want to type commands. |
+| **Settings** (☰) | Change settings in plain words: pick and add models, add servers and keys, behaviour, safety, web search. **Restart solv** applies them and keeps your conversation. |
+| File links | Click a file path or link in an answer to read the file in the page (workspace files only). |
+| **Agents** button | Shows each sub-agent's live log in a side panel, with a **Stop** button while it runs. |
 | `solv --list-sessions` | List running sessions with their links. |
 | `solv --kill <id>` | Stop one session. |
 
@@ -445,7 +453,8 @@ either side. `?` in the empty text box lists the page's keys.
 | `web_search` | Search the web (optional, see [Web search](#web-search-optional)). |
 | `web_fetch` | Read one public web page as text. Refuses local and private addresses, and does not use a system proxy. |
 | `ask_user_question` | Ask you one question with 2 to 4 options. Type a number or your own answer; an empty reply or `skip` skips it. |
-| `spawn_agent` | Hand a self-contained task to a sub-agent with its own empty context. Sub-agents run in the background, several at once, while you keep working; each summary comes back as a message when it is done. When one starts, solv asks once whether it may do things that need your approval. You can name a model for the task. A model on the same machine as the active one asks first. Alt+Shift+1…9 stops it. |
+| `spawn_agent` | Hand a self-contained task to a sub-agent with its own empty context. Sub-agents run in the background, several at once, while you keep working; each summary comes back as a message when it is done. When one starts, solv asks once whether it may do things that need your approval. You can name a model for the task. A model on the same machine as the active one asks first. Alt+Shift+1…9 stops it; Alt+1…9 opens its live log. |
+| `memory` | Remember facts across sessions. Say "remember …" and whether it is **global** (every workspace) or for **this workspace**; if you don't say, solv asks. Kept in small files in `.solv/memory`; solv sees only the titles until one fits the task. "Forget …" removes one. |
 | `use_skill` | Load a skill, or read one of its extra files. Only there when skills exist. |
 
 **What searches skip.** `grep`, `glob`, `list_dir` and `@` completion skip what your project's ignore files list (read from the workspace root):
