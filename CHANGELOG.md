@@ -5,6 +5,11 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.16.1] - 2026-11-19
+
+### Changed
+- `/help`, `/context`, `/cost` and `/skills` show real tables in the web UI and the terminal. `/skills` shows each skill in its own box with the full description: an expandable box in the web UI, a bordered box in the terminal.
+
 ## [0.16.0] - 2026-11-19
 
 ### Added
@@ -464,3 +469,4 @@ First public demo build.
 [0.14.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.14.3
 [0.15.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.15.0
 [0.16.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.0
+[0.16.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.1
