@@ -90,7 +90,7 @@ See what changed in the [changelog](CHANGELOG.md).
 
 Open a new terminal afterwards. Updates keep your `.solv` folder.
 
-**Update:** `solv --update` (or `/update` in a session) downloads the latest release, checks its SHA-256 and replaces the program; start solv again afterwards. It also adds the folder to `PATH` if it is not there yet. At start, solv tells you when a new version is out (turn this off with `check_for_updates`). Running the install command again also updates.
+**Update:** `solv --update` (or `/update` in a session) downloads the latest release, checks its SHA-256 and replaces the program; type `/restart` in the session (or start solv again) to use it. It also adds the folder to `PATH` if it is not there yet. At start, solv tells you when a new version is out (turn this off with `check_for_updates`). Running the install command again also updates.
 
 **Nightly test builds:** `solv --update nightly` (or `/update nightly`) installs the newest build, including test builds published as GitHub pre-releases. They can have bugs. The normal update and the start-up check never offer them; the next release replaces a nightly with a normal `solv --update`.
 
@@ -236,6 +236,7 @@ All go inside `user_settings`.
 | `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Attach them to bug reports. | `false` |
 | `cleanup_period_days` | Delete saved sessions and logs not used for this many days, at start. `0` = keep forever. | `30` |
 | `sub_agents` | `false` = the model cannot start sub-agents. `/sub-agents on\|off` switches it. | `true` |
+| `image_model` | The image model for `generate_image`. Empty = found by itself (a model whose server lists image output). A model id = that model. `off` = no image tool. | `""` |
 | `notify_after_seconds` | Ring the terminal bell when an answer ends or a prompt waits, if this many seconds passed since your last input. Not inside herdr (herdr has its own bell). `0` = never. | `30` |
 
 [↑ Back to contents](#contents)
@@ -267,7 +268,8 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/web [start\|open]` | Show the web UI address · start it now · open it in the browser. |
 | `/setup [target]` | Connect a model server or API, or change `preferences` or the `search` server (see [Configure](#configure)). |
 | `/approvals` | List what you allowed with `a` (always) this session. |
-| `/update [nightly]` | Install the latest release. `nightly` = the newest test build. Start solv again to use it. |
+| `/update [nightly]` | Install the latest release. `nightly` = the newest test build. Then `/restart` to use it. |
+| `/restart` | Restart solv and continue this conversation (for example after `/update`). |
 | `/revoke <n\|tool\|all>` | Ask again before a tool or command allowed with `a`. |
 | `/resume [n\|id]` | List the saved conversations, or switch to one. `/continue` switches to the most recent. |
 | `/reset`, `/help`, `/exit` | Fresh conversation (also clears the `a` approvals) · all commands · quit (shows how to resume). |
@@ -335,6 +337,8 @@ With a vision model, attach a png, jpg, webp or gif:
 | Kept in the conversation | the last 5; older ones become a text note |
 
 Works with local servers, Gemini, Claude and OpenAI. `"vision": false` in `user_models` turns it off for one model.
+
+**Making images.** With an image model on your server (OpenAI-style `/v1/images/generations`, for example FLUX behind llama-swap), ask for one: "make a pixel-art slime placeholder". solv asks first, saves it in `.solv/images/` in your workspace and shows a link (Ctrl+click opens it) or the image itself in the web UI. Say where a copy goes ("put it in Assets/Placeholders"), or write the folder in your AGENTS.md. Image models are not listed in `/model`.
 
 ### Project rules
 
@@ -449,6 +453,7 @@ either side. `?` in the empty text box lists the page's keys.
 | `glob` | Find files by name pattern (`**/*.cs`), newest first. |
 | `create_file`, `edit_file` | Create a file, replace text in a file. |
 | `delete_file_or_folder` | Delete. Never the workspace itself. |
+| `generate_image` | Make images (placeholders, sprites, icons) with your image model. Saved in `.solv/images/`; a copy goes where you say. Only there when an image model is found or set. |
 | `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere. 120 s timeout. Long output is saved to `.solv/temp/`, except in Plan mode. |
 | `web_search` | Search the web (optional, see [Web search](#web-search-optional)). |
 | `web_fetch` | Read one public web page as text. Refuses local and private addresses, and does not use a system proxy. |
