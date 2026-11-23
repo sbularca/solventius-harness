@@ -420,7 +420,8 @@ A skill of yours with the same name replaces a built-in one.
 
 Use the same session from a browser: on this computer, a laptop on the LAN, or your phone over Tailscale. Type, attach
 files and images (📎, drop or paste), allow tools, switch model and mode, steer, ask `/btw`, and stop an answer from
-either side. `?` in the empty text box lists the page's keys.
+either side (Esc twice, or **Stop**). `?` in the empty text box lists the page's keys. Windows and panels stay open
+until you click ✕, OK, Save or Cancel.
 
 | Command | Effect |
 |---|---|

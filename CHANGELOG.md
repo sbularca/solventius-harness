@@ -5,6 +5,17 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.16.3] - 2026-11-23
+
+### Changed
+- Web UI: the menu, Settings, dialogs and the Agents panel stay open until you click ✕, OK, Done, Save or Cancel. A click outside or Esc no longer closes them, and picking a menu item keeps the menu open.
+- Web UI: press Esc twice to stop an answer, so one stray Esc does not stop it. After the first Esc the page shows "Press Esc again to stop" for 2.5 seconds.
+
+### Fixed
+- `/restart` keeps the web UI on when you started it with `/web start`, with the same address and token.
+- A tool call that asked for permission no longer leaves its "○ running" line stuck above the input.
+- With the web page open next to the terminal, a number typed in the browser now answers the model's question at once, without pressing Esc first.
+
 ## [0.16.2] - 2026-11-23
 
 ### Added
@@ -480,3 +491,4 @@ First public demo build.
 [0.16.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.0
 [0.16.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.1
 [0.16.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.2
+[0.16.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.3
