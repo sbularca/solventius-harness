@@ -431,7 +431,7 @@ until you click ✕, OK, Save or Cancel.
 | **☰** menu | Every command as a button, with small windows for values (pick a saved conversation, a thinking level, a folder). Made for people who do not want to type commands. |
 | **Settings** (☰) | Change settings in plain words: pick and add models, add servers and keys, behaviour, safety, web search. **Restart solv** applies them and keeps your conversation. |
 | File links | Click a file path or link in an answer to read the file in the page (workspace files only). |
-| **Agents** button | Shows each sub-agent's live log in a side panel, with a **Stop** button while it runs. |
+| **Agents** button | Shows each sub-agent's live log in a side panel, with a **Stop** button while it runs. Close a finished agent's tab with its ×. Drag the panel's left edge to resize it. |
 | `solv --list-sessions` | List running sessions with their links. |
 | `solv --kill <id>` | Stop one session. |
 
@@ -524,7 +524,6 @@ Roughly in this order. No dates; plans change.
 
 - **Extensions:** MCP servers as extra tools.
 - **Bundled local model:** start without a model server or an API key.
-- **Memory:** remember facts across sessions.
 - **Speed:** read-only tools (reads, searches, web pages) run at the same time.
 - **Native builds on Linux and macOS:** faster start-up and a smaller footprint, as on Windows already.
 

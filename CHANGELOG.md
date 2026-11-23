@@ -5,6 +5,18 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.16.4] - 2026-11-23
+
+### Added
+- Web UI: a finished sub-agent's tab in the Agents panel has a × that closes its log. Closing the last tab hides the Agents button.
+- Web UI: drag the Agents panel's left edge to resize it. The page remembers the width.
+
+### Changed
+- Sub-agents do only their task: no charts, reports or files unless the task asks for them. They return the full findings (numbers, sources) instead of a short summary, and the main model writes the answer from them.
+
+### Fixed
+- Typing `/web ` now suggests `start` and `open`, like `/update ` suggests `nightly`.
+
 ## [0.16.3] - 2026-11-23
 
 ### Changed
@@ -492,3 +504,4 @@ First public demo build.
 [0.16.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.1
 [0.16.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.2
 [0.16.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.3
+[0.16.4]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.4
