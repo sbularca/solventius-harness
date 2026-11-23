@@ -5,6 +5,15 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.16.2] - 2026-11-23
+
+### Added
+- `/restart` restarts solv and continues the conversation in the same terminal, for example after `/update`. After an update, solv now tells you to type `/restart`.
+- Image generation: the model can make images with `generate_image`, for example placeholder sprites and icons. It uses an OpenAI-style image server (`/v1/images/generations`, for example FLUX behind llama-swap). Images are saved in `.solv/images/` in the workspace, shown as a clickable link in the terminal and inline in the web UI. Say where a copy should go ("put it in Assets/Placeholders") or name the folder in AGENTS.md. New setting `image_model`: empty = found by itself, a model id, or `off`. Image models no longer show up in `/model`.
+
+### Fixed
+- Windows: `/update` no longer fails with "remove write protection" after a `/restart`. Old copies of solv left by updates are removed at the next start.
+
 ## [0.16.1] - 2026-11-19
 
 ### Changed
@@ -470,3 +479,4 @@ First public demo build.
 [0.15.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.15.0
 [0.16.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.0
 [0.16.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.1
+[0.16.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.2
