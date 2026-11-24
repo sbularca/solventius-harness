@@ -5,6 +5,14 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.16.6] - 2026-11-24
+
+### Added
+- Web UI: an **⇔** button in the header switches between the centered column and the full window width; the page remembers it.
+
+### Changed
+- Web UI: questions from the model stand out more. The box has a glow and a large question, the options are numbered, the whole row is clickable, and the tab title shows ❓ until you answer.
+
 ## [0.16.4] - 2026-11-23
 
 ### Added
@@ -505,3 +513,4 @@ First public demo build.
 [0.16.2]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.2
 [0.16.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.3
 [0.16.4]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.4
+[0.16.6]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.6
