@@ -57,6 +57,7 @@ See what changed in the [changelog](CHANGELOG.md).
 - [Skills](#skills)
 - [Web UI](#web-ui)
 - [Tools](#tools)
+- [MCP servers](#mcp-servers)
 - [Troubleshooting](#troubleshooting)
 - [Exceptions](#exceptions)
 - [Roadmap](#roadmap)
@@ -236,6 +237,7 @@ All go inside `user_settings`.
 | `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Attach them to bug reports. | `false` |
 | `cleanup_period_days` | Delete saved sessions and logs not used for this many days, at start. `0` = keep forever. | `30` |
 | `sub_agents` | `false` = the model cannot start sub-agents. `/sub-agents on\|off` switches it. | `true` |
+| `mcp_servers` | MCP servers that give the model more tools. `/mcp add` or the web UI's MCP tab write it; see [MCP servers](#mcp-servers). | `{}` |
 | `image_model` | The image model for `generate_image`. Empty = found by itself (a model whose server lists image output). A model id = that model. `off` = no image tool. | `""` |
 | `notify_after_seconds` | Ring the terminal bell when an answer ends or a prompt waits, if this many seconds passed since your last input. Not inside herdr (herdr has its own bell). `0` = never. | `30` |
 
@@ -260,6 +262,7 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/context` | Show how full the context is. |
 | `/cost` | Tokens per model this session, and the provider's cost page. |
 | `/sub-agents [on\|off]` | Allow or forbid sub-agents. Saved in `settings.json`. |
+| `/mcp [add\|retry\|remove\|disable\|enable\|tools]` | MCP servers: list them · set one up · connect again · remove one · turn one off or on (keeps its settings) · list its tools. |
 | `/agent-log [n]` | Open a sub-agent's live log in a new window (its tool calls and results as they happen). No number lists the logs. |
 | `/btw <question>` | Ask a side question. The answer shows above the input and is not added to the conversation. Works while it works too. |
 | `/skills` | List the skills and whether each is loaded. |
@@ -462,6 +465,7 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 | `spawn_agent` | Hand a self-contained task to a sub-agent with its own empty context. Sub-agents run in the background, several at once, while you keep working; each summary comes back as a message when it is done. When one starts, solv asks once whether it may do things that need your approval. You can name a model for the task. A model on the same machine as the active one asks first. Alt+Shift+1…9 stops it; Alt+1…9 opens its live log. |
 | `memory` | Remember facts across sessions. Say "remember …" and whether it is **global** (every workspace) or for **this workspace**; if you don't say, solv asks. Kept in small files in `.solv/memory`; solv sees only the titles until one fits the task. "Forget …" removes one. |
 | `use_skill` | Load a skill, or read one of its extra files. Only there when skills exist. |
+| `<server>__<tool>` | Tools of your MCP servers. See [MCP servers](#mcp-servers). |
 
 **What searches skip.** `grep`, `glob`, `list_dir` and `@` completion skip what your project's ignore files list (read from the workspace root):
 
@@ -516,13 +520,28 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 
 [↑ Back to contents](#contents)
 
+## MCP servers
+
+Connect apps with a built-in MCP server (Unity, Figma desktop, Blender, …) or programs like `npx` / `uvx` packages, and the model can use their tools.
+
+- `/mcp add` asks a few questions: the app's address (for example `http://localhost:3845/mcp`) or the command that starts the program, a name, an optional token. It tests the connection and lets you pick the tools.
+- In the web UI: ☰ → **App tools (MCP)** opens the MCP tab in the settings (add, edit, test, retry, remove, tool checkboxes).
+- `/mcp` shows the status. `/mcp retry` connects again after you opened the app. `/mcp tools <name>` lists a server's tools. `/mcp disable <name>` turns a server off without removing it; `/mcp enable <name>` turns it on again.
+- A closed app only gives a warning; solv keeps working. When an app restarts, the next tool call reconnects by itself.
+- MCP tools ask before each call in Manual and Edit mode and are blocked in Plan mode, unless the server marks them read-only. They are not limited to the workspace.
+- Tokens are saved in `.solv/.credentials`, never in `settings.json`. In `settings.json`, `${NAME}` stands for an environment variable or a saved token.
+- Small models choose badly from many tools: keep only the ones you need.
+- Images from MCP tools (screenshots) go to the model when it can see images.
+- Not yet: OAuth sign-in for remote servers, the old SSE transport.
+
+[↑ Back to contents](#contents)
+
 ## Roadmap
 
 Roughly in this order. No dates; plans change.
 
 **Next**
 
-- **Extensions:** MCP servers as extra tools.
 - **Bundled local model:** start without a model server or an API key.
 - **Speed:** read-only tools (reads, searches, web pages) run at the same time.
 - **Native builds on Linux and macOS:** faster start-up and a smaller footprint, as on Windows already.

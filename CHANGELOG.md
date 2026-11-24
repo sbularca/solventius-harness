@@ -5,12 +5,32 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-24
+
+### Added
+- MCP servers: connect apps with a built-in MCP server (Unity, Figma, Blender…) or programs like `npx` packages, and the model can use their tools. `/mcp add` sets one up in a few questions and tests it; `/mcp` shows the status; `/mcp retry` and `/mcp remove`. Settings: `mcp_servers`.
+- `/mcp disable <name>` turns an MCP server off and keeps its settings; `/mcp enable <name>` turns it on again.
+- Web UI: an **MCP** tab in the settings to add, edit, test, retry and remove MCP servers and pick their tools. ☰ → **App tools (MCP)** opens it.
+- Images from MCP tools (for example a Unity or Figma screenshot) go to the model when it can see images; other models get a short text note instead.
+- When an MCP server dropped out (the app was closed or restarted), the next tool call reconnects by itself and repeats the call if it never reached the server.
+
+### Known issues
+- Windows: an MCP server started through a `.cmd` or `.bat` file (for example `npx`, `uvx`) cannot get arguments that contain `%` or `"`; solv refuses them with a message. Start the program directly instead.
+
+### Fixed
+- Terminal: the thinking indicator now shows while a skill you start with a slash (for example `/handoff`) runs, also between its steps.
+- Terminal: file edit previews (diffs) have no side borders anymore, only a line above and below, so you can copy the changed lines.
+- Terminal: code blocks in answers are no longer drawn inside a box, so you can select and copy them without border characters; long lines are not cut.
+- Web UI: the Copy button now works in the file viewer and in the `/btw` panel when the page is opened over plain HTTP (LAN, Tailscale). If the browser still refuses, the code is selected and the button says "Press Ctrl+C".
+- Gemini 3: tool calls keep their thought signature, so a turn with several tool steps no longer fails with an error from Gemini.
+
 ## [0.16.6] - 2026-11-24
 
 ### Added
 - Web UI: an **⇔** button in the header switches between the centered column and the full window width; the page remembers it.
 
 ### Changed
+- Terminal: Esc must be pressed twice to stop a running answer, like in the web UI. The first Esc shows "Press Esc again to stop"; after 2.5 s it resets. Ctrl+C still stops at once.
 - Web UI: questions from the model stand out more. The box has a glow and a large question, the options are numbered, the whole row is clickable, and the tab title shows ❓ until you answer.
 
 ## [0.16.4] - 2026-11-23
@@ -514,3 +534,4 @@ First public demo build.
 [0.16.3]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.3
 [0.16.4]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.4
 [0.16.6]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.6
+[0.17.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.17.0
