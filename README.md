@@ -11,7 +11,7 @@ Pack it on a stick with llama.cpp and a small <=9B model configured to run on CP
 
 - **Built for local models:** shorter tool results on small contexts (32k or less), file reads sized to the context, automatic smart compaction.
 - **Light:** one file, a low CPU and memory footprint. The machine stays free for the model.
-- **Little setup:** the first start finds your local server or takes an API key. It detects the server type, lists the models and reads their context size.
+- **Little setup:** the first start finds your local server or takes an API key, detects the server type, lists the models and reads their context size.
 - **No cloud account needed.**
 
 It does not include a model. It started as a learning project and became a tool I use every day. It began inspired by pi.dev's
@@ -23,26 +23,26 @@ slash commands, skills, sub-agents, MCP servers and plan mode. It is tested on r
 <details>
 <summary>Show</summary>
 
-- **File tools:** read, list, search, find by pattern, create, edit and delete files in the workspace.
+- **File tools:** read, list, search, find, create, edit and delete files in the workspace.
 - **Shell commands:** PowerShell on Windows, `/bin/sh` elsewhere, after you allow them.
 - **Session modes:** from asking before every change to running everything.
-- **Safe for NDA work:** block folders and files from the model with `.solv/.ignore`, and turn on `private` so nothing is saved or logged. See [Working with NDA files](#working-with-nda-files).
-- **Plan mode:** the model plans a large change first and shows you the plan; you approve it and pick the mode to build it in.
-- **Sub-agents:** the model hands self-contained tasks to helpers that run in the background, several at once, while you keep working.
-- **MCP servers:** connect apps like Unity, Figma or Blender and the model uses their tools. `/mcp add` sets one up.
-- **Sessions:** every conversation is saved; `/resume` picks one up again.
-- **Memory:** say "remember …" and solv keeps the fact for this project or for every project.
-- **Code review:** `/code-review` checks your changes for bugs and reports only findings it has verified.
-- **Scheduled prompts:** `/loop` repeats a prompt or a command while solv is open.
-- **Image generation:** with an image model on your server, the model makes placeholders, sprites and icons.
+- **Safe for NDA work:** block paths with `.solv/.ignore`; `private` turns off saving and logging. See [Working with NDA files](#working-with-nda-files).
+- **Plan mode:** the model plans a large change and you approve it before it builds.
+- **Sub-agents:** self-contained tasks run in the background, several at once.
+- **MCP servers:** tools from apps like Unity, Figma or Blender. `/mcp add` sets one up.
+- **Sessions:** conversations are saved; `/resume` continues one.
+- **Memory:** "remember …" keeps a fact for this project or all projects.
+- **Code review:** `/code-review` reports only findings it has verified.
+- **Scheduled prompts:** `/loop` repeats a prompt or command while solv is open.
+- **Image generation:** placeholders, sprites and icons with an image model on your server.
 - **Many servers:** llama.cpp, llama-swap, Ollama, LM Studio, vLLM, any OpenAI-compatible server, plus Claude, Gemini and OpenAI.
-- **Images:** drag and drop an image on the terminal or the web UI, or paste it or name its path, for vision models.
-- **Documents:** reads the text of PDF, Word (`.docx`), Excel (`.xlsx`) and OpenDocument (`.odt`, `.ods`) files, by `read_file` or drag and drop.
-- **Skills:** instructions in `SKILL.md` files that the model loads when it needs them.
+- **Images:** drop, paste or name an image for vision models, in the terminal or the web UI.
+- **Documents:** text of PDF, `.docx`, `.xlsx`, `.odt` and `.ods` files.
+- **Skills:** `SKILL.md` instructions the model loads when it needs them.
 - **Web:** search with your own search server, and read web pages.
 - **Web UI:** the same session in a browser, also from your phone.
-- **Project rules:** an `AGENTS.md` in the project, plus one for all projects.
-- **[herdr](https://herdr.dev) support:** in a herdr pane it reports idle, working or blocked, and the agent name shows the workspace folder. Nothing to set up.
+- **Project rules:** an `AGENTS.md` per project, plus one for all projects.
+- **[herdr](https://herdr.dev) support:** reports idle, working or blocked; the agent name shows the workspace.
 
 </details>
 
@@ -60,10 +60,8 @@ irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.p
 curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh
 ```
 
-Then open a new terminal and follow [Configure](#configure). Update later with `solv --update`. Choose the folder or install by hand: [Install](#install).
-
-You can also **[download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** as a zip.
-See what changed in the [changelog](CHANGELOG.md).
+Then open a new terminal and follow [Configure](#configure). Other folders and manual install: [Install](#install).
+Or **[download the latest release](https://github.com/sbularca/solventius-harness/releases/latest)** as a zip. Changes: [changelog](CHANGELOG.md).
 
 ## Contents
 
@@ -86,7 +84,7 @@ See what changed in the [changelog](CHANGELOG.md).
 <summary>Show</summary>
 
 - Windows x64, Linux x64, or macOS (arm64 / x64, untested). No .NET install needed.
-- A model server whose model supports **tool calling** (others can only chat), or an API key for
+- A model with **tool calling** (others can only chat), or an API key for
   [Claude](https://platform.claude.com), [Gemini](https://aistudio.google.com/apikey) or [OpenAI](https://platform.openai.com).
 
 | Server | Address (`endpoint`) |
@@ -108,41 +106,26 @@ See what changed in the [changelog](CHANGELOG.md).
 <details>
 <summary>Show</summary>
 
-**One command** (installs the latest release, checks its SHA-256, adds it to `PATH`; run it again to update):
+The [Quick install](#quick-install) commands download the latest release, check its SHA-256 and add the folder to `PATH`
+(Windows: `%LOCALAPPDATA%\solv`, Linux / macOS: `~/solv`). Open a new terminal afterwards.
 
-- **Windows** (PowerShell): `irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.ps1 | iex`
-  → `%LOCALAPPDATA%\solv`
-- **Linux / macOS**: `curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | sh`
-  → `~/solv`
-
-Open a new terminal afterwards. Updates keep your `.solv` folder.
-
-**Update:** `solv --update` (or `/update` in a session) downloads the latest release, checks its SHA-256 and replaces the program; type `/restart` in the session (or start solv again) to use it. It also adds the folder to `PATH` if it is not there yet. At start, solv tells you when a new version is out (turn this off with `check_for_updates`). Running the install command again also updates.
-
-**Nightly test builds:** `solv --update nightly` (or `/update nightly`) installs the newest build, including test builds published as GitHub pre-releases. They can have bugs. The normal update and the start-up check never offer them; the next release replaces a nightly with a normal `solv --update`.
-
-**Choose the install folder:** set `SOLV_INSTALL_DIR`. Use the same folder for every update; it must be a folder of its own
-that your user can write to (not `Program Files`, `/usr/local/bin` or `~/.local/bin`).
-
-```powershell
-$env:SOLV_INSTALL_DIR = "D:\tools\solv"; irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.ps1 | iex
-```
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | SOLV_INSTALL_DIR="$HOME/tools/solv" sh
-```
+- **Other folder:** set `SOLV_INSTALL_DIR` to a folder of its own that you can write to (not `Program Files`, `/usr/local/bin`
+  or `~/.local/bin`), and use the same one for every update:
+  - Windows: `$env:SOLV_INSTALL_DIR = "D:\tools\solv"; irm https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.ps1 | iex`
+  - Linux / macOS: `curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/install.sh | SOLV_INSTALL_DIR="$HOME/tools/solv" sh`
+- **Update:** `solv --update` or `/update`, then `/restart`. It checks the SHA-256, keeps `.solv`, and adds the folder to `PATH` if missing.
+  solv tells you at start when a release is out (`check_for_updates`).
+- **Nightly builds:** `solv --update nightly` installs the newest GitHub pre-release. Can have bugs; the next normal `--update` replaces it.
 
 **By hand:**
 
-1. Download the zip for your system from the [releases page](https://github.com/sbularca/solventius-harness/releases/latest).
-2. Unzip it, for example into `C:\solv` or `~/solv`.
-3. Linux / macOS: run `chmod +x solv`. macOS, if blocked: `xattr -d com.apple.quarantine solv`, then `codesign --force --sign - solv` (the download is not signed; Apple Silicon stops unsigned programs).
-4. Check it: `solv --selftest`. Every line must say `PASS` or `SKIP`.
-5. Add the **folder** to `PATH`. Don't copy or link the program: its settings live in the `.solv` folder next to it.
-   - **Windows:** Start menu → *Edit environment variables for your account* → **Path** → **Edit…** → **New** → `C:\solv`.
-   - **Linux:** `echo 'export PATH="$HOME/solv:$PATH"' >> ~/.bashrc`
-   - **macOS:** the same, into `~/.zshrc`.
-6. Open a **new** terminal and run `solv --help`.
+1. Download and unzip the zip for your system from [releases](https://github.com/sbularca/solventius-harness/releases/latest), for example into `C:\solv` or `~/solv`.
+2. Linux / macOS: `chmod +x solv`. macOS, if blocked: `xattr -d com.apple.quarantine solv`, then `codesign --force --sign - solv` (unsigned; Apple Silicon stops unsigned programs).
+3. Check it: `solv --selftest`. Every line must say `PASS` or `SKIP`.
+4. Add the **folder** to `PATH` (don't copy or link the program; its settings live in `.solv` next to it):
+   - **Windows:** *Edit environment variables for your account* → **Path** → **New** → `C:\solv`.
+   - **Linux:** `echo 'export PATH="$HOME/solv:$PATH"' >> ~/.bashrc` (macOS: `~/.zshrc`).
+5. Open a **new** terminal and run `solv --help`.
 
 [↑ Back to contents](#contents)
 
@@ -153,37 +136,26 @@ curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/in
 <details>
 <summary>Show</summary>
 
-**First start:** start `solv`. A short setup runs when there is no `settings.json`:
+**First start:** without a `settings.json`, `solv` runs a short setup:
 
-1. Pick a model server. It looks for a local one (Ollama, llama.cpp, LM Studio) or tests the address you type.
-   For Gemini, Claude or OpenAI it asks for the API key (hidden while you type), tests it and saves it.
+1. Pick a model server: it finds a local one (Ollama, llama.cpp, LM Studio) or tests your address. For Gemini, Claude or OpenAI it asks for the key, tests it and saves it.
 2. Pick a model.
-3. Answer a few yes/no questions: session logs, full tool results, the model's reasoning. Enter keeps "no".
-4. Optional: give a 4get or SearXNG search server. It tests one search.
+3. Answer yes/no for session logs, full tool results and the model's reasoning (Enter = no).
+4. Optional: a 4get or SearXNG search server.
 
-- **Run it again** any time with `/setup` or `solv --setup`. `/setup local|gemini|claude|openai` goes straight to one;
-  `/setup preferences` and `/setup search` ask only those questions.
-- **Skip it:** press Enter on an empty answer. You get a default `settings.json` to fill in by hand.
+Run it again with `/setup` or `solv --setup` (`/setup local|gemini|claude|openai|preferences|search` for one part). An empty answer skips it and writes a default `settings.json`.
 
-> Tip - Once a model running, Solventius has an embedded guide for itself. Want something modified in settings?
-> Just ask the model to do it for you!
+> **Tip:** solv has a built-in guide to itself. Ask the model to change a setting for you.
 
-**By hand:** edit `.solv/settings.json` next to the program. Your settings go under `user_settings`. Leave `app_state`
-alone; the app writes it.
+**By hand:** edit `.solv/settings.json` next to the program, under `user_settings`. Leave `app_state` alone.
 
-> **Read-only program folder?** If `solv` cannot write next to itself (for example under `C:\Program Files`), it keeps its
-> settings, keys, logs and history in `.solv` in your home folder instead.
-
-> **Every setting, explained:** the zip includes `settings.example.jsonc`, with a comment for each setting. The harness
-> does not read it. Copy the parts you need into `settings.json` **without the comments**: a comment stops the file from loading.
-
-> **Upgrading?** A `settings.json` directly next to the program is no longer read. Move it into `.solv`. A file in the old
-> layout is renamed to `settings.json.old`.
+- **Read-only program folder** (e.g. `C:\Program Files`): solv uses `.solv` in your home folder instead.
+- **All settings:** `settings.example.jsonc` in the zip comments each one. Copy parts **without the comments**; a comment stops the file from loading.
+- **Upgrading:** a `settings.json` next to the program is no longer read; move it into `.solv` (an old-layout file is renamed `settings.json.old`).
 
 ### Model servers
 
-The setup writes this part for you. A default `settings.json` (setup skipped) already lists Gemini, Claude and OpenAI.
-Delete the ones you don't use and add your local servers.
+The setup writes this. A default `settings.json` lists Gemini, Claude and OpenAI; delete what you don't use.
 
 ```json
 {
@@ -199,81 +171,65 @@ Delete the ones you don't use and add your local servers.
 | Key | Meaning |
 |---|---|
 | `endpoint` | The server's root address, ending with `/`. |
-| `id` | Optional name, shown in `/model` and in the prompt. |
+| `id` | Optional name, shown in `/model` and the prompt. |
 | `type` | Optional, skips detection: `llama-swap`, `llama.cpp`, `ollama`, `lmstudio`, `vllm`, `ninfer`, `gemini`, `anthropic`, `openai`, `generic`. |
-| `api_key_env` | The **name** of the environment variable that holds the key. Never the key itself. |
-| `key_command` | A command that prints the key, for a password manager (e.g. `op read op://Private/gemini/credential`). Runs once per session, within 15 s. |
-| `compact_at` | Compact the conversation at this prompt size (tokens). Default: 95 % of the usable context. On cloud models it caps the cost per request. A value above the usable context still applies, as long as about 1/16 of the context stays free for the answer. |
+| `api_key_env` | The **name** of the environment variable with the key. Never the key itself. |
+| `key_command` | A command that prints the key (password manager, e.g. `op read op://Private/gemini/credential`). Runs once per session, within 15 s. |
+| `compact_at` | Compact at this prompt size (tokens). Default: 95 % of the usable context. Caps the cost per request on cloud models. |
 
-- **Start-up:** each server gets 5 seconds to answer. All their models show up in `/model`.
-- **Per model** (optional): `user_models` overrides `context_size`, `max_tokens`, `compact_at`, `vision` or `parallel_tool_calls` for one model,
-  or adds a model no server lists: `"user_models": [{ "id": "qwen3:8b", "context_size": 32768 }]`.
-- **Large `max_tokens`** (some models recommend 32k for thinking) is fine. solv keeps at most 1/8 of the context free for
-  the answer, and lowers `max_tokens` on a request when the conversation leaves less room.
-- **Busy servers:** on HTTP 429 or 503 it waits and tries again, up to 3 times. **Esc** stops the wait. A daily quota or a
-  wait over 60 seconds gives a plain message at once.
+- Each server gets 5 s to answer at start; all their models show in `/model`.
+- `user_models` overrides `context_size`, `max_tokens`, `compact_at`, `vision` or `parallel_tool_calls` per model, or adds an unlisted one: `"user_models": [{ "id": "qwen3:8b", "context_size": 32768 }]`.
+- A large `max_tokens` is fine: solv lowers it per request so the answer fits (at most 1/8 of the context is kept free).
+- HTTP 429 / 503: up to 3 retries, **Esc** stops the wait. A daily quota or a wait over 60 s gives a message at once.
 
-> **Privacy and cost:** with a cloud provider, your prompts and the files the assistant reads go to that provider.
-> Gemini's free tier may use them to improve Google's products, so don't use it on private code. `/cost` shows your tokens.
+> **Privacy and cost:** with a cloud provider, your prompts and the files the model reads go to that provider. Gemini's free tier may use them for Google's products. `/cost` shows your tokens.
 
 ### API keys
 
-**Easiest:** `/setup gemini` (or `claude`, `openai`). It tests the key and saves it in `.solv/.credentials`.
+`/setup gemini` (or `claude`, `openai`) tests the key and saves it in `.solv/.credentials`: readable only by you, **not encrypted**, never commit it. Order: `api_key_env`, then `key_command`, then the saved key.
 
-- That file is readable only by you. It is **not encrypted**. Never commit or share it.
-- **Order:** the `api_key_env` variable wins, then `key_command`, then the saved key.
-
-**Hidden from the model:** shell commands get no key variables. A loaded key that shows up in a tool result or the log
-becomes `[hidden]`. This stops accidental leaks only: a command can still read a key from the file where you stored it.
-Read what a command does before you allow it.
-
-**Environment variable instead:** set it, then **open a new terminal**. These commands ask for the key at a hidden prompt,
-so it stays out of your shell history:
-
-- **Windows** (PowerShell 7): `[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", (Read-Host "Key" -MaskInput), "User")`
-- **Linux:** `read -rsp "Key: " k && echo "export GEMINI_API_KEY='$k'" >> ~/.bashrc && unset k && chmod 600 ~/.bashrc`
-- **macOS:** `read -rs "k?Key: " && echo "export GEMINI_API_KEY='$k'" >> ~/.zshrc && unset k && chmod 600 ~/.zshrc`
-
-**Claude:** create the key **inside a workspace** in the Claude Console. Other keys are refused.
+- Shell commands get no key variables, and a loaded key in a tool result or log becomes `[hidden]`. A command can still read the file where you stored a key.
+- **Environment variable** (asks at a hidden prompt; then open a new terminal):
+  - Windows (PowerShell 7): `[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", (Read-Host "Key" -MaskInput), "User")`
+  - Linux: `read -rsp "Key: " k && echo "export GEMINI_API_KEY='$k'" >> ~/.bashrc && unset k && chmod 600 ~/.bashrc`
+  - macOS: `read -rs "k?Key: " && echo "export GEMINI_API_KEY='$k'" >> ~/.zshrc && unset k && chmod 600 ~/.zshrc`
+- **Claude:** create the key **inside a workspace** in the Claude Console.
 
 ### Web search (optional)
 
-The `web_search` tool needs a search server: [4get](https://git.lolcat.ca/lolcat/4get) (recommended) or
-[SearXNG](https://docs.searxng.org) (add `json` under `search:` → `formats:` in its `settings.yml`).
+`web_search` needs [4get](https://git.lolcat.ca/lolcat/4get) (recommended) or [SearXNG](https://docs.searxng.org) (add `json` under `search:` → `formats:` in `settings.yml`). `/setup search` adds and tests one.
 
 ```json
 "search_providers": [{ "id": "4get", "endpoint": "http://localhost:8081" }],
 "active_search_provider": "4get"
 ```
 
-- `/setup search` adds one and tests it. Without a search server, the model does not get `web_search`.
-- The `endpoint` has **no** trailing `/`.
-- Quick 4get: `docker run -d --name 4get -p 8081:80 -e FOURGET_SERVER_NAME="localhost" -e FOURGET_PROTO="http" luuul/4get:latest`
+The `endpoint` has **no** trailing `/`. Quick 4get: `docker run -d --name 4get -p 8081:80 -e FOURGET_SERVER_NAME="localhost" -e FOURGET_PROTO="http" luuul/4get:latest`
 
 ### Other settings (optional)
 
-All go inside `user_settings`.
+All inside `user_settings`.
 
 | Key | Meaning | Default |
 |---|---|---|
-| `auto_compact` | Compact by itself near the limit. `false`: only `/compact`, and once after a "context too long" error. `/auto-compact` changes it per model. | `true` |
-| `compact_at` | Compact at this prompt size (tokens), for every model without its own value. | 95 % of the usable context |
+| `auto_compact` | Compact by itself near the limit. `false` = only `/compact` and after a "context too long" error. `/auto-compact` sets it per model. | `true` |
+| `compact_at` | Compact at this prompt size (tokens), for models without their own value. | 95 % of usable context |
 | `request_timeout` | Seconds to wait for one answer. | `600` |
-| `classifier_model` | A model for side jobs. Auto mode: it checks shell commands. Empty = the model you chat with. A model id = that model. `off` = every command that is not plainly read-only asks. A different model (for example a small one on another server) also writes session titles and checks all shell commands of one reply at the same time, so the main model only does the main work. If it is not found or fails, solv warns once and uses the model you chat with. On a local server with one slot, a check on the chat model can push the chat out of the prompt cache; start the server with two slots or use a classifier on another server. The old name `shell_judge_model` still works. | `""` |
-| `batch_tool_calls` | Ask the model to request independent reads and searches in one reply, so answers take fewer steps. If a server rejects the `parallel_tool_calls` field, solv turns it off for that model until restart. `parallel_tool_calls` in `user_models` sets it per model. | `true` |
-| `system_prompt` | Instructions sent at the start of every conversation. | `You are a terse AI assistant` |
-| `show_reasoning` | Show the model's thinking text. | `false` |
-| `show_tool_response` | Show what each tool returned to the model. | `false` |
-| `check_for_updates` | At start, tell you when a newer release is out. At most 20 checks a day; offline it stays quiet. | `true` |
-| `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Attach them to bug reports. | `false` |
-| `cleanup_period_days` | Delete saved sessions and logs not used for this many days, at start. `0` = keep forever. | `30` |
-| `save_sessions` | Save each conversation for `--resume` and `/resume`. `false` = nothing is saved to disk, and `/restart` starts empty. | `true` |
-| `private` | For files under NDA: web and MCP tools ask you first in every mode ("always" is not remembered for them), nothing is saved or logged (typed prompts included), and saved shell output is deleted at exit. | `false` |
-| `defer_tools_above` | With more MCP tools than this, the model gets their names only and loads what it needs. `0` = always send every tool in full. | `10` |
-| `sub_agents` | `false` = the model cannot start sub-agents. `/sub-agents on\|off` switches it. | `true` |
-| `mcp_servers` | MCP servers that give the model more tools. `/mcp add` or the web UI's MCP tab write it; see [MCP servers](#mcp-servers). | `{}` |
-| `image_model` | The image model for `generate_image`. Empty = found by itself (a model whose server lists image output). A model id = that model. `off` = no image tool. | `""` |
-| `notify_after_seconds` | Ring the terminal bell when an answer ends or a prompt waits, if this many seconds passed since your last input. Not inside herdr (herdr has its own bell). `0` = never. | `30` |
+| `classifier_model` | Model for side jobs: checks Auto-mode shell commands; a separate model also writes session titles and checks a reply's commands in parallel. Empty = the chat model, `off` = every non-read-only command asks. Falls back to the chat model with one warning. On a one-slot local server, use two slots or another server to keep the prompt cache. Old name: `shell_judge_model`. | `""` |
+| `batch_tool_calls` | Ask the model to batch independent reads and searches. Turned off per model if the server rejects `parallel_tool_calls`. | `true` |
+| `system_prompt` | Instructions at the start of every conversation. | `You are a terse AI assistant` |
+| `show_reasoning` | Show the model's thinking. | `false` |
+| `show_tool_response` | Show each tool result. | `false` |
+| `check_for_updates` | Tell you at start when a release is out (at most 20 checks a day). | `true` |
+| `enable_logging` | Log and transcript in `.solv/logs/`, for bug reports. | `false` |
+| `cleanup_period_days` | Delete sessions and logs unused this long. `0` = keep. | `30` |
+| `save_sessions` | Save conversations for `/resume`. `false` = nothing on disk; `/restart` starts empty. | `true` |
+| `private` | For NDA files: web and MCP tools always ask ("always" not remembered), nothing saved or logged (typed prompts included), shell output deleted at exit. | `false` |
+| `defer_tools_above` | Above this many MCP tools, send names only; the model loads what it needs. `0` = always in full. | `10` |
+| `sub_agents` | `false` = no sub-agents. `/sub-agents on\|off`. | `true` |
+| `mcp_servers` | MCP servers; written by `/mcp add` or the web UI. See [MCP servers](#mcp-servers). | `{}` |
+| `image_model` | Model for `generate_image`. Empty = found by itself, `off` = no image tool. | `""` |
+| `notify_after_seconds` | Ring the bell when an answer ends or a prompt waits after this many idle seconds. Not in herdr. `0` = never. | `30` |
 
 [↑ Back to contents](#contents)
 
@@ -284,67 +240,55 @@ All go inside `user_settings`.
 <details>
 <summary>Show</summary>
 
-Open a terminal **in your project folder** and type `solv`. That folder is the workspace.
-
-- The prompt shows the mode and the model.
-- After each answer, one line shows the time, the tokens, how full the context is, the model steps and tool calls, and the time spent in the model and in tools.
-- Near the limit it compacts by itself: old tool results shrink to notes, older turns become a summary, the last 2 turns stay.
+Run `solv` **in your project folder**; that folder is the workspace. The prompt shows mode and model. After each answer, a line shows time, tokens, context use, steps, tool calls, and model / tool time. Near the limit it compacts: old tool results become notes, older turns a summary, the last 2 turns stay.
 
 | Command | Effect |
 |---|---|
-| `/model [n\|id]` | List the models by server, or switch. The pick is kept for the next start. While sub-agents run, the switch waits until they finish. |
-| `/session-mode <mode>` | Change when it asks (see [Session modes](#session-modes)). |
-| `/thinking <on\|off\|level\|reset>` | Thinking on or off, or its level. Saved per model. |
-| `/compact [focus]` | Compact now. The focus says what to keep. |
-| `/auto-compact [on\|off\|reset]` | Compacting by itself on or off for this model. Saved per model. `reset` = use `auto_compact`. |
-| `/export [file]` | Save the conversation as Markdown in the workspace (default `solv-<id>.md`). Tool results are cut. |
-| `/context` | Show how full the context is. |
-| `/cost` | Tokens per model this session, and the provider's cost page. |
-| `/sub-agents [on\|off]` | Allow or forbid sub-agents. Saved in `settings.json`. |
-| `/mcp [add\|retry\|remove\|disable\|enable\|tools]` | MCP servers: list them · set one up · connect again · remove one · turn one off or on (keeps its settings) · list its tools. |
-| `/agent-log [n]` | Open a sub-agent's live log in a new window (its tool calls and results as they happen). No number lists the logs. |
-| `/btw <question>` | Ask a side question. The answer shows above the input and is not added to the conversation. Works while it works too. |
-| `/loop [interval] <prompt>` | Repeat a prompt or a command while solv is open: every interval (`10m`), or the model picks each delay. `/loop stop` ends it. |
-| `/skills` | List the skills and whether each is loaded. |
-| `/<skill-name> [text]` | Load a skill and send it with your text. A built-in command with the same name wins. |
+| `/model [n\|id]` | List models by server, or switch (kept for next start; waits for running sub-agents). |
+| `/session-mode <mode>` | Change when it asks ([Session modes](#session-modes)). |
+| `/thinking <on\|off\|level\|reset>` | Thinking on/off or its level, per model. |
+| `/compact [focus]` | Compact now; the focus says what to keep. |
+| `/auto-compact [on\|off\|reset]` | Auto-compaction for this model. `reset` = use `auto_compact`. |
+| `/export [file]` | Save the conversation as Markdown (default `solv-<id>.md`, tool results cut). |
+| `/context`, `/cost` | Context use · tokens per model and the provider's cost page. |
+| `/sub-agents [on\|off]` | Allow or forbid sub-agents. |
+| `/mcp [add\|retry\|remove\|disable\|enable\|tools]` | MCP servers: status · set up · reconnect · remove · off / on · list tools. |
+| `/agent-log [n]` | Open a sub-agent's live log in a new window; no number lists them. |
+| `/btw <question>` | Side question; not added to the conversation. Works during an answer. |
+| `/loop [interval] <prompt>` | Repeat a prompt or command every interval (`10m`), or at delays the model picks. `/loop stop` ends it. |
+| `/skills`, `/<skill-name> [text]` | List skills · load one with your text (a built-in command with the same name wins). |
 | `/set-workspace <folder>` | Work in another folder, with a fresh conversation. |
-| `/web [start\|open]` | Show the web UI address · start it now · open it in the browser. |
-| `/setup [target]` | Connect a model server or API, or change `preferences` or the `search` server (see [Configure](#configure)). |
-| `/approvals` | List what you allowed with `a` (always) this session. |
-| `/update [nightly]` | Install the latest release. `nightly` = the newest test build. Then `/restart` to use it. |
-| `/restart` | Restart solv and continue this conversation (for example after `/update`). |
-| `/revoke <n\|tool\|all>` | Ask again before a tool or command allowed with `a`. |
-| `/resume [n\|id]` | List the saved conversations, or switch to one. `/continue` switches to the most recent. |
+| `/web [start\|open]` | Web UI address · start it · open it. |
+| `/setup [target]` | Connect a server or API, or change `preferences` / `search`. |
+| `/approvals`, `/revoke <n\|tool\|all>` | List · take back what you allowed with `a`. |
+| `/update [nightly]`, `/restart` | Install the latest release · restart and keep the conversation. |
+| `/resume [n\|id]`, `/continue` | List or switch to a saved conversation · the most recent. |
 | `/delete-session <n\|id>` | Delete a saved conversation (not the open one). |
-| `/save-defaults` | Start with the current model and session mode next time (`Full` is never saved). |
-| `/reset`, `/help`, `/exit` | Fresh conversation (also clears the `a` approvals) · all commands · quit (shows how to resume). |
+| `/save-defaults` | Keep the current model and mode for the next start (`Full` never). |
+| `/reset`, `/help`, `/exit` | Fresh conversation (clears `a` approvals) · all commands · quit. |
 
-**Arguments:** `--resume [id]` (no id: list saved conversations), `--continue` (the most recent), `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update [nightly]`, `--help`.
+**Arguments:** `--resume [id]`, `--continue`, `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update [nightly]`, `--help`.
 
-**Saved conversations:** every conversation is saved after each answer in `.solv/history/`. `solv --resume <id>` continues it, in its workspace. Inside herdr, the pane comes back in the same conversation after a herdr restart (needs `solv` on PATH).
+Conversations are saved in `.solv/history/` after each answer; `solv --resume <id>` continues one in its workspace.
 
 | Key | Effect |
 |---|---|
-| **Esc** | Stop an answer |
+| **Esc** | Stop an answer ("stop" typed is only a message) |
 | **Shift+Tab** | Next session mode |
 | **Tab** | Complete |
-| **↑ / ↓**, **Ctrl+R** | History, search the history |
+| **↑ / ↓**, **Ctrl+R** | History, search it |
 | `\` + **Enter** | New line |
 | **Alt+V** / **Ctrl+V** | Paste a clipboard image |
-| **Ctrl+O** | Show the last tool run in full · with `/btw` open: show all / less |
-| **Ctrl+X** | Close the `/btw` answer (it moves into the scrollback) |
-| **Alt+1…9** | Open that sub-agent's live log in a new window |
-| **?** | Show all keys |
+| **Ctrl+O** | Last tool run in full · with `/btw` open: more / less |
+| **Ctrl+X** | Close the `/btw` answer |
+| **Alt+1…9** / **Alt+Shift+1…9** | Open / stop a sub-agent |
+| **?** | All keys |
 
-- **Steering:** type while it works. The message reaches the model after its current tool calls, so you can correct it mid-task. Commands wait for the answer, except `/btw`.
-- **Stop:** typing "stop" is only a message. Press **Esc** to stop at once.
-- **Text files:** drop one on the terminal to attach it (up to 256 KB; the model gets the whole file).
-- **`@` mentions:** type `@` and a path in the workspace, e.g. `explain @src/main.cs`. **Tab** completes it. The model gets the file with your message.
-- **`!` commands:** `!git status` runs the command yourself, without the model and without asking. The output goes to the model with your next message. Not in Plan mode.
-- **Tool calls:** they show live above the input while the model works. The conversation keeps one line per run (`● read 3 files · searched 2 patterns`) plus any edit diffs. **Ctrl+O** prints the last run in full.
-- **Questions from the model:** pick with **↑ / ↓** or a number, **Space** ticks in multi-select, **Enter** sends, **Esc** skips, or choose "Type something…" to answer in your own words.
-- **Resize:** the output re-flows to the new window width.
-- **Bell:** after a long answer, or when it waits for you, the terminal bell rings (see `notify_after_seconds`).
+- **Steering:** type while it works; the message reaches the model after its current tool calls. Commands wait, except `/btw`.
+- **`@path`** attaches a workspace file (Tab completes). **Dropped text files** attach up to 256 KB.
+- **`!command`** runs it yourself, without asking; the output goes with your next message. Not in Plan mode.
+- **Tool calls** show live, then collapse to one line per run plus edit diffs.
+- **Model questions:** ↑ / ↓ or a number, Space ticks, Enter sends, Esc skips, or type your own answer.
 
 ### Session modes
 
@@ -353,54 +297,26 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `Manual` | run | ask | ask |
 | `Plan` | run | blocked | blocked |
 | `Edit` | run | run | ask |
-| `Auto` (default) | run | run | run; a classifier model checks shell commands and asks you about risky ones |
+| `Auto` (default) | run | run | run; the classifier asks you about risky commands |
 | `Full` | run | run | run, also outside the workspace |
 
-- **Read-only commands in Auto** run without asking: `git status`, `git diff`, `git log`, `ls`, `dir`, `pwd` and a few more.
-- **Other shell commands in Auto** go to a classifier model first (by default the model you chat with). It allows normal steps
-  for your request, like a version check, a build or a test. It asks you about deletes, installs, pushes, network access or
-  anything that does not fit. An error or an unclear answer also asks. The prompt shows the classifier's reason.
-  Auto trusts the model with files in the workspace, and a command can run code the model wrote. Use `Edit` or `Manual`
-  on projects you don't trust. `classifier_model` picks another model, or `off` makes every such command ask.
-- **When it asks:** `y` allows once, `a` allows for the rest of the session, anything else refuses. For `run_shell`, `a`
-  covers only that exact command. In the browser, `a` is the **Always this session** button.
-- The model knows the current mode, and is told when you change it.
+- **Auto:** read-only commands (`git status`, `git diff`, `ls`, `pwd`, …) run. Others go to the classifier, which allows normal steps (builds, tests) and asks about deletes, installs, pushes, network access or anything unclear, with its reason. Auto trusts the model with the workspace; use `Edit` or `Manual` on untrusted projects.
+- **Answers:** `y` once, `a` for the session (`run_shell`: that exact command), anything else refuses.
+- The model knows the mode and is told when it changes.
 
 ### Images
 
-With a vision model, attach a png, jpg, webp or gif:
+Drop, paste (**Ctrl+V / Alt+V**, or 📎 in the web UI) or name a png, jpg, webp or gif (full, quoted, `~`, relative or `file://` path). Limits: 5 per message, 5 MB each, 14 MB per request; the last 5 stay, older ones become a note. `"vision": false` in `user_models` turns it off.
 
-- **Drag and drop** the file on the terminal or on the web UI page.
-- Paste it with **Ctrl+V / Alt+V** in the terminal, or paste it or use 📎 in the web UI.
-- Put its path in your message: full paths (spaces need no quotes), quoted, with `~`, relative to the workspace, or a `file://` link.
-
-| Limit | Value |
-|---|---|
-| Per message | 5 images |
-| Per image | 5 MB |
-| Per request | 14 MB |
-| Kept in the conversation | the last 5; older ones become a text note |
-
-Works with local servers, Gemini, Claude and OpenAI. `"vision": false` in `user_models` turns it off for one model.
-
-**Making images.** With an image model on your server (OpenAI-style `/v1/images/generations`, for example FLUX behind llama-swap), ask for one: "make a pixel-art slime placeholder". solv asks first, saves it in `.solv/images/` in your workspace and shows a link (Ctrl+click opens it) or the image itself in the web UI. Say where a copy goes ("put it in Assets/Placeholders"), or write the folder in your AGENTS.md. Image models are not listed in `/model`.
+**Making images:** with an image model (OpenAI-style `/v1/images/generations`, e.g. FLUX behind llama-swap), ask "make a pixel-art slime placeholder". solv asks first and saves to `.solv/images/`; say where a copy goes, or name the folder in `AGENTS.md`.
 
 ### Project rules
 
-| File | Applies to |
-|---|---|
-| `AGENTS.md` in the workspace | This project. Wins over the global file. |
-| `.solv/AGENTS.md` next to the program | Every project. |
-
-- Put build commands and what not to touch there. Keep them short.
-- Both are read at every start, and again after `/reset`, `/set-workspace` or a model switch.
-- **Limit:** 40,000 characters together, fewer on small models (about 13,000 for a 32k context). A longer project file is
-  cut; a global file over the limit is skipped, with a warning.
-- A `HANDOFF.md` in the workspace is read at start too (see [Skills](#skills)).
+`AGENTS.md` in the workspace (this project, wins) and `.solv/AGENTS.md` next to the program (every project). Read at start and after `/reset`, `/set-workspace` or a model switch. Limit 40,000 characters together, less on small models (~13,000 at 32k); a long project file is cut, a global one over the limit skipped. `HANDOFF.md` is read at start too.
 
 ### herdr
 
-In a [herdr](https://herdr.dev) pane the harness reports **idle**, **working** or **blocked**. The agent name shows the workspace folder (`solv · myproject`) and follows `/set-workspace`; a herdr restart opens solv in that workspace. Nothing to set up.
+In a [herdr](https://herdr.dev) pane solv reports **idle**, **working** or **blocked**; the agent name shows the workspace (`solv · myproject`) and follows `/set-workspace`. A herdr restart reopens the same conversation (needs `solv` on `PATH`).
 
 [↑ Back to contents](#contents)
 
@@ -411,59 +327,37 @@ In a [herdr](https://herdr.dev) pane the harness reports **idle**, **working** o
 <details>
 <summary>Show</summary>
 
-A skill is a set of instructions the model loads only when it needs them. It adds no new tools.
+A skill is instructions the model loads when it needs them; it adds no tools. Create `<folder>/SKILL.md` in `.agents/skills/` in the workspace (this project; wins, with a warning) or `.solv/skills/` next to the program (every project):
 
-**Make one**
+```markdown
+---
+name: release-notes
+description: Use when the user asks for release notes.
+---
+Read the git log since the last tag. Group the changes by type.
+```
 
-1. Make a folder with a `SKILL.md` file in it, in one of two places:
+The model loads it when your request matches the description; small models often miss this, so `/<skill-name> [text]` forces it. `/skills` lists them. Rescanned after `/reset` and `/set-workspace`.
 
-   | Folder | Applies to |
-   |---|---|
-   | `.agents/skills/<folder>/` in the workspace | This project. Wins on the same name; solv shows a warning when it hides another skill. |
-   | `.solv/skills/<folder>/` next to the program | Every project. |
-
-2. Start `SKILL.md` with a `name` and a `description` between two `---` lines. The instructions follow:
-
-   ```markdown
-   ---
-   name: release-notes
-   description: Use when the user asks for release notes.
-   ---
-   Read the git log since the last tag. Group the changes by type.
-   ```
-
-**Use it**
-
-- The model loads a skill by itself when your request matches the description.
-- Small local models often miss this. Type `/<skill-name> [text]` to load it for sure.
-- `/skills` lists them. Skills are read at the start, and again after `/reset` and `/set-workspace`.
-
-**Built-in skills**
-
-| Skill | What it does |
+| Built-in | Does |
 |---|---|
-| `solv-guide` | The model answers questions about solv itself: commands, modes, skills, settings. |
-| `skill-creator` | The model writes or improves a skill. Ask "make a skill for writing release notes". |
-| `handoff` | The model writes `HANDOFF.md` in the workspace, so a fresh session can continue the work. Type `/handoff [what the next session is for]`. It replaces an old `HANDOFF.md`. |
-| `init` | The model explores the workspace and writes a short `AGENTS.md`: build and test commands, layout, code rules. Type `/init [extra wishes]`. It asks before changing an existing file. |
-| `code-review` | The model reviews your uncommitted changes (or a branch, commit or path you name) for bugs, checks each finding before it reports it, and changes no file. Type `/code-review [what to review]`. |
+| `solv-guide` | Answers questions about solv: commands, modes, skills, settings. |
+| `skill-creator` | Writes or improves a skill. |
+| `handoff` | `/handoff [goal]` writes `HANDOFF.md` so a fresh session continues the work; loaded once at the next start. |
+| `init` | `/init [wishes]` writes a short `AGENTS.md` (build, test, layout, rules); asks before changing one. |
+| `code-review` | `/code-review [branch\|commit\|path]` reviews changes, verifies each finding, changes no file. |
 
 A skill of yours with the same name replaces a built-in one.
 
-**Handoff:** when solv starts in a workspace with `HANDOFF.md`, it adds the file to the context and tells you the file is now safe to delete. A resumed conversation does not load it again.
-
-**Rules**
-
-| Item | Rule |
+| Rule | |
 |---|---|
-| Name | Letters, digits, `-` and `_` only. |
-| Description | Say *when* to use the skill. Up to 1024 characters are kept. All descriptions go with every request. |
-| `$ARGUMENTS` | Replaced by the text you pass. Without it, the text is added at the end. |
-| Extra files | Files next to `SKILL.md` are read on demand. The instructions must say which file to read, and when. |
-| Links | A skill folder or file that is a link does not load. |
-| Limits | The first 50 skills (in name order) go in the prompt; `/<skill-name>` reaches the rest. A file over 1 MB is refused. |
+| Name | Letters, digits, `-`, `_`. |
+| Description | Say *when* to use it. The first 1024 characters are kept; all descriptions go with every request. |
+| `$ARGUMENTS` | Replaced by your text, else the text is appended. |
+| Extra files | Next to `SKILL.md`, read on demand; the instructions say which and when. |
+| Limits | First 50 skills (by name) in the prompt, the rest by `/<skill-name>`. Files over 1 MB and links are refused. |
 
-> **Trust:** a skill is plain text, but the model follows it. Read the skills of a project you don't trust, as you would its `AGENTS.md`.
+> **Trust:** the model follows skills. Read a foreign project's skills as you would its `AGENTS.md`.
 
 [↑ Back to contents](#contents)
 
@@ -474,30 +368,20 @@ A skill of yours with the same name replaces a built-in one.
 <details>
 <summary>Show</summary>
 
-Use the same session from a browser: on this computer, a laptop on the LAN, or your phone over Tailscale. Type, attach
-files and images (📎, drop or paste), allow tools, switch model and mode, steer, ask `/btw`, and stop an answer from
-either side (Esc twice, or **Stop**). `?` in the empty text box lists the page's keys. Windows and panels stay open
-until you click ✕, OK, Save or Cancel. **⇔** in the header switches between a centered column and the full window width.
+The same session in a browser, locally, on the LAN or on your phone over Tailscale: type, attach files, allow tools, switch model and mode, steer, `/btw`, and stop from either side. `?` in the empty box lists the keys.
 
 | Command | Effect |
 |---|---|
-| `solv --web` | Print the address, for example `http://localhost:8787/my-project/?t=<token>`. Open it once with `?t=`, then bookmark the clean address. |
-| `/web start` | Turn it on later in a running session. |
-| `solv --web-only` | Run the session **hidden in the background** and open the page. **Quit solv** in the page's ☰ menu stops it. With no browser open for 30 minutes while it waits for you, it quits by itself (`web_idle_minutes`); `solv --resume` opens the conversation again. |
-| **☰** menu | Every command as a button, with small windows for values (pick a saved conversation, a thinking level, a folder). Made for people who do not want to type commands. |
-| **Settings** (☰) | Change settings in plain words: pick and add models, add servers and keys, behaviour, safety, web search. **Restart solv** applies them and keeps your conversation. |
-| File links | Click a file path or link in an answer to read the file in the page (workspace files only). |
-| **Agents** button | Shows each sub-agent's live log in a side panel, with a **Stop** button while it runs. Close a finished agent's tab with its ×. Drag the panel's left edge to resize it. |
-| `solv --list-sessions` | List running sessions with their links. |
-| `solv --kill <id>` | Stop one session. |
+| `solv --web` / `/web start` | Start it and print the address (`http://localhost:8787/my-project/?t=<token>`). Open it once with `?t=`, then bookmark. |
+| `solv --web-only` | Run hidden in the background. ☰ → **Quit solv** stops it; it quits after 30 idle minutes without a browser (`web_idle_minutes`). |
+| `solv --list-sessions`, `--kill <id>` | List running sessions · stop one. |
+| **☰** menu | Every command as a button; **Settings** edits models, servers, keys, safety and search, then **Restart solv** keeps the conversation. |
+| File links | Open workspace files in a viewer. |
+| **Agents** | Sub-agent live logs in a side panel, with **Stop**. |
 
-**Other devices:**
+**Other devices:** set `"web_bind": "0.0.0.0", "web_port": 8787` (default `127.0.0.1` = this computer). On Windows, once as admin: `netsh http add urlacl url=http://+:8787/ user=%USERDOMAIN%\%USERNAME%`.
 
-1. In `user_settings`, set `"web_bind": "0.0.0.0", "web_port": 8787`. The default `127.0.0.1` is this computer only.
-2. On Windows, run once as administrator: `netsh http add urlacl url=http://+:8787/ user=%USERDOMAIN%\%USERNAME%`.
-
-> **Security:** the page can do everything the harness can, including running commands. The token is the only lock, and
-> the page uses plain HTTP. Use it on networks you trust or over Tailscale. New token: delete `.solv/web-token` and restart.
+> **Security:** the page can do all the harness can, over plain HTTP; the token is the only lock. Use trusted networks or Tailscale. New token: delete `.solv/web-token` and restart.
 
 [↑ Back to contents](#contents)
 
@@ -510,44 +394,99 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 
 | Tool | Does |
 |---|---|
-| `read_file` | Read a file. Big files come in parts sized to the context. Also returns the text of `.pdf`, `.docx`, `.xlsx`, `.odt` and `.ods` files; refuses other binary files. Scanned PDFs (no text layer) are not supported. |
-| `list_dir`, `grep` | List and search files in the workspace. |
-| `glob` | Find files by name pattern (`**/*.cs`), newest first. |
+| `read_file` | Read a file, in parts sized to the context. Text of `.pdf`, `.docx`, `.xlsx`, `.odt`, `.ods`; other binaries and scanned PDFs refused. |
+| `list_dir`, `grep`, `glob` | List, search, find by pattern (`**/*.cs`, newest first). |
 | `create_file`, `edit_file` | Create a file, replace text in a file. |
 | `delete_file_or_folder` | Delete. Never the workspace itself. |
-| `generate_image` | Make images (placeholders, sprites, icons) with your image model. Saved in `.solv/images/`; a copy goes where you say. Only there when an image model is found or set. |
-| `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere. 120 s timeout (the model can set up to 600 s). Long output is saved to `.solv/temp/`, except in Plan mode. |
-| `web_search` | Search the web (optional, see [Web search](#web-search-optional)). |
-| `web_fetch` | Read one public web page as text. Refuses local and private addresses, and does not use a system proxy. |
-| `ask_user_question` | Ask you one question with 2 to 4 options. Type a number or your own answer; an empty reply or `skip` skips it. |
-| `report_findings` | Show the findings of a code review or another check as a table. |
-| `tool_search` | When MCP servers add more than 10 tools (setting `defer_tools_above`), the model sees their names and loads only the ones it needs. Rarely used tools such as `cron` are always loaded this way. |
-| `cron` | Schedule prompts with a cron expression while solv is open (create, list, delete). |
-| `schedule_wakeup` | During a `/loop` without an interval: run the loop prompt again in 60 s to 1 h, or stop the loop. |
-| `enter_plan_mode` | Ask you to switch to Plan mode before a large or unclear change. |
-| `exit_plan_mode` | Show you the finished plan: approve it and pick the mode to build it in, or say what to change. |
-| `spawn_agent` | Hand a self-contained task to a sub-agent with its own empty context. Sub-agents run in the background, several at once, while you keep working; each summary comes back as a message when it is done. When one starts, solv asks once whether it may do things that need your approval. You can name a model for the task. A model on the same machine as the active one asks first. Alt+Shift+1…9 stops it; Alt+1…9 opens its live log. |
-| `memory` | Remember facts across sessions. Say "remember …" and whether it is **global** (every workspace) or for **this workspace**; if you don't say, solv asks. Kept in small files in `.solv/memory`; solv sees only the titles until one fits the task. "Forget …" removes one. |
-| `use_skill` | Load a skill, or read one of its extra files. Only there when skills exist. |
-| `<server>__<tool>` | Tools of your MCP servers. See [MCP servers](#mcp-servers). |
+| `run_shell` | PowerShell / `/bin/sh`. 120 s timeout (up to 600 s). Long output saved to `.solv/temp/`. |
+| `web_search`, `web_fetch` | Search ([setup](#web-search-optional)) · read a public page (no local or private addresses, no system proxy). |
+| `ask_user_question` | One question with 2–4 options. |
+| `report_findings` | Show review findings as a table. |
+| `tool_search` | Load MCP tools by name when there are more than `defer_tools_above`; also loads rare tools like `cron`. |
+| `cron`, `schedule_wakeup` | Schedule prompts by cron expression · during an interval-less `/loop`, rerun in 60 s–1 h or stop. |
+| `enter_plan_mode`, `exit_plan_mode` | Ask to switch to Plan mode · show the plan for approval and pick the build mode. |
+| `spawn_agent` | Run a task in a sub-agent with its own context, in the background; the summary comes back as a message. Asks once about approvals; a model on the same machine asks first. |
+| `memory` | Remember / forget facts, global or per workspace, in `.solv/memory` (titles only until one fits). |
+| `generate_image` | Images with your image model, saved in `.solv/images/`. |
+| `use_skill` | Load a skill or one of its files. |
+| `<server>__<tool>` | Tools of your [MCP servers](#mcp-servers). |
 
-**What searches skip.** `grep`, `glob`, `list_dir` and `@` completion skip what your project's ignore files list (read from the workspace root):
+**Searches skip** (`grep`, `glob`, `list_dir`, `@` completion) what ignore files list: `.gitignore`, `ignore.conf` (Plastic / Unity VCS), `.p4ignore`, `.tfignore`, `.hgignore`, `.bzrignore`, `.fossil-settings/ignore-glob`, `.ignore`, `.rgignore`; subfolder `.gitignore` / `.ignore` / `.rgignore` too (`!` brings back). Without any, `bin`, `obj`, `node_modules`, `dist`, `build` and similar are skipped. `.git`, `.hg`, `.svn`, `.plastic`, `.solv` always are. A skipped folder given as the path is still searched. `grep` uses `rg` when installed. Not read: git's global ignore file.
 
-- `.gitignore`, `ignore.conf` (Plastic SCM / Unity Version Control), `.p4ignore` (Perforce), `.tfignore` (TFVC), `.hgignore` (Mercurial), `.bzrignore` (Bazaar), `.fossil-settings/ignore-glob` (Fossil), `.ignore`, `.rgignore`.
-- Without any of these files, `bin`, `obj`, `node_modules`, `dist`, `build` and similar folders are skipped.
-- `.git`, `.hg`, `.svn`, `.plastic` and `.solv` are always skipped.
-- A skipped folder is still searched when the model gives it as the path. Search results name the folders they skipped.
-- They also follow `.gitignore`, `.ignore` and `.rgignore` files in subfolders, for example in each repo of a folder of repos. A `!` rule in a subfolder brings back what a higher folder skipped.
-- `grep` uses `rg` (ripgrep) when it is installed, for speed; the results are the same. After an update, solv offers to install it when it is missing.
-- Not read: git's global ignore file.
+**Block paths** with `.solv/.ignore` (`.gitignore` rules) in the workspace or next to the program: hidden from searches and refused by every file tool. The model cannot read or change it. See [Working with NDA files](#working-with-nda-files).
 
-**Block folders or files from the model.** Create `.solv/.ignore` in the workspace (this project) or next to the program (all projects):
+[↑ Back to contents](#contents)
 
-- It uses `.gitignore` rules, one per line, for example `secrets/` or `*.pem`.
-- A matching path is hidden from searches and listings, and every file tool refuses to read or write it.
-- The model cannot read or change the workspace `.solv/.ignore`. Both files are optional; solv never creates them.
-- `run_shell` cannot be fully blocked: a shell command can reach a file in ways solv cannot see. A command that names a blocked path (`cat secrets/a.txt`) asks you first in every mode, and so does the next command after a refused path.
-- **For files under NDA:** see [Working with NDA files](#working-with-nda-files).
+</details>
+
+## MCP servers
+
+<details>
+<summary>Show</summary>
+
+Tools from apps with an MCP server (Unity, Figma desktop, Blender, …) or `npx` / `uvx` programs.
+
+- `/mcp add` asks for the address (e.g. `http://localhost:3845/mcp`) or command, a name and an optional token, tests it and lets you pick tools. Web UI: ☰ → **App tools (MCP)**.
+- `/mcp` status · `retry` reconnects · `tools <name>` lists · `disable` / `enable <name>` turns off / on.
+- A closed app only warns; the next call reconnects after it restarts.
+- They ask in Manual and Edit, are blocked in Plan (unless marked read-only), and are not limited to the workspace.
+- Tokens go to `.solv/.credentials`; `${NAME}` in `settings.json` means an environment variable or saved token.
+- Keep few tools for small models. Images from MCP tools reach vision models.
+- Not yet: OAuth for remote servers, the old SSE transport.
+
+[↑ Back to contents](#contents)
+
+</details>
+
+## Working with NDA files
+
+<details>
+<summary>Show</summary>
+
+No setup protects everything; this is as close as solv gets.
+
+**1. Session**
+
+- **Any model:** the block list and `private` work the same with local and cloud models; a blocked file is never read, so never sent. With a cloud model, files the model *may* read go to the provider.
+- `private: true`: nothing saved or logged; web and MCP tools always ask.
+- **Manual** mode (every shell command asks), or at least Edit.
+- `/mcp disable` servers you don't need; MCP tools are not limited to the workspace.
+
+**2. Block list**
+
+`.gitignore` only hides from searches; a known path is still readable. Only `.solv/.ignore` blocks.
+
+- **Global** (next to the program): keys, env files. **Workspace**: the project's NDA folders; adds to global, its `!` cannot un-block a global rule.
+- Block **folders**, not files: new files are covered, forgotten ones are not.
+- Block **copies** too: exports, build output, caches, logs, backups (e.g. Unity `Library/`).
+- Block **documents by type**: solv reads `.pdf`, `.docx`, `.xlsx`, `.odt`, `.ods`.
+- Invalid lines are named at start.
+
+```gitignore
+# workspace .solv/.ignore
+ClientX/
+Contracts/
+Exports/
+Library/
+*.pdf
+*.docx
+```
+
+```gitignore
+# global .solv/.ignore
+*.pem
+*.key
+.env*
+secrets/
+```
+
+**3. Test:** `@` + a blocked path must not complete; listing, searching and reading it by full path must be refused. Changes apply without a restart.
+
+**4. Limits**
+
+- **Shell** can reach blocked files (wildcards, variables, scripts). Naming a blocked path asks first; read every command.
+- A file read **before** you blocked it stays in the conversation until `/reset`.
+- **Memories** in `.solv/memory` stay, even with `private`.
 
 [↑ Back to contents](#contents)
 
@@ -560,20 +499,20 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 
 | Symptom | Fix |
 |---|---|
-| `Connection refused` / server "did not answer" | The server isn't running, or the `endpoint` is wrong. |
-| `HTTP 404` | Wrong model `id`, or the `endpoint` misses its last `/`. |
-| No cloud models in `/model` | Read the start-up warnings. Run `/setup gemini` (or `claude`, `openai`), or set the variable and open a **new** terminal. `api_key_env` holds the name, not the key. |
+| `Connection refused` / "did not answer" | Server not running, or wrong `endpoint`. |
+| `HTTP 404` | Wrong model `id`, or `endpoint` misses its last `/`. |
+| No cloud models in `/model` | Read the start-up warnings. `/setup gemini` (or `claude`, `openai`), or set the variable and open a **new** terminal. |
 | Claude: "not scoped to a workspace" | Create the key inside a workspace in the Claude Console. |
-| Only chats, never uses files | The model doesn't support tool calling. |
-| `Free-tier limit reached` / `Rate limit reached` / `Server busy` | Try again later, or pick another model with `/model`. |
-| Image not sent, an info line says no vision | The model has no vision, or `"vision": false` is set for it. |
-| `Conversation too long - use /reset` | Check `context_size` against the server, then `/reset`. A lower `compact_at` compacts earlier. |
-| A skill never loads by itself | Type `/<skill-name>`. Make the description say *when* to use it. |
-| Settings ignored after an update | The file must be `.solv/settings.json` next to the program. |
+| Only chats, never uses files | The model lacks tool calling. |
+| `Free-tier limit` / `Rate limit` / `Server busy` | Wait, or `/model` another. |
+| Image not sent, "no vision" | The model has no vision, or `"vision": false`. |
+| `Conversation too long - use /reset` | Check `context_size`, then `/reset`. Lower `compact_at` compacts earlier. |
+| A skill never loads by itself | `/<skill-name>`; make the description say *when*. |
+| Settings ignored after an update | It must be `.solv/settings.json` next to the program. |
 | Web UI: "Not signed in" | Open the address with `?t=` once (`/web` shows it). |
 | `Permission denied` (Linux / macOS) | `chmod +x solv` |
-| Web search fails, or the model has no `web_search` | No `search_providers`, the server is down, or SearXNG lacks `json`. Try `/setup search`. |
-| A bug to report | Set `"enable_logging": true`, repeat it, and attach the files from `.solv/logs/` with the `solv --selftest` output. |
+| No `web_search` / search fails | No `search_providers`, server down, or SearXNG lacks `json`. `/setup search`. |
+| Bug report | `"enable_logging": true`, repeat, attach `.solv/logs/` and `solv --selftest` output. |
 
 [↑ Back to contents](#contents)
 
@@ -584,98 +523,7 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 <details>
 <summary>Show</summary>
 
-**Some small models cannot sustain long agentic loops.** They work for short tasks, but in a long session they eventually fail. Seen with LFM2.5-8B-A1B (about 1B active parameters):
-
-- After many tool calls, the model stops calling tools. It writes a plan as JSON text instead (for example `{"plan": …, "commands": […]}`), and nothing runs.
-- Once one such reply is in the conversation, the model copies it. Later messages such as "continue" do not help.
-- It repeats the same failing command without progress.
-
-**What to do:**
-
-1. Keep sessions short: one small task per session.
-2. When the model breaks like this, start a new session (`/reset`, or restart `solv`). Do not try to talk it out of the loop.
-
-[↑ Back to contents](#contents)
-
-</details>
-
-## MCP servers
-
-<details>
-<summary>Show</summary>
-
-Connect apps with a built-in MCP server (Unity, Figma desktop, Blender, …) or programs like `npx` / `uvx` packages, and the model can use their tools.
-
-- `/mcp add` asks a few questions: the app's address (for example `http://localhost:3845/mcp`) or the command that starts the program, a name, an optional token. It tests the connection and lets you pick the tools.
-- In the web UI: ☰ → **App tools (MCP)** opens the MCP tab in the settings (add, edit, test, retry, remove, tool checkboxes).
-- `/mcp` shows the status. `/mcp retry` connects again after you opened the app. `/mcp tools <name>` lists a server's tools. `/mcp disable <name>` turns a server off without removing it; `/mcp enable <name>` turns it on again.
-- A closed app only gives a warning; solv keeps working. When an app restarts, the next tool call reconnects by itself.
-- MCP tools ask before each call in Manual and Edit mode and are blocked in Plan mode, unless the server marks them read-only. They are not limited to the workspace.
-- Tokens are saved in `.solv/.credentials`, never in `settings.json`. In `settings.json`, `${NAME}` stands for an environment variable or a saved token.
-- Small models choose badly from many tools: keep only the ones you need.
-- Images from MCP tools (screenshots) go to the model when it can see images.
-- Not yet: OAuth sign-in for remote servers, the old SSE transport.
-
-[↑ Back to contents](#contents)
-
-</details>
-
-## Working with NDA files
-
-<details>
-<summary>Show</summary>
-
-How to keep files under NDA away from the model. No setup protects everything; this gets as close as solv can.
-
-**1. Set up the session**
-
-- **Any model works.** The block list and `private` protect the same way with local and cloud models: a blocked file is never read, so it is never sent. With a cloud model, the files the model is allowed to read go to the provider; with a local model, nothing leaves your machine.
-- **Set `private` to `true`.** Nothing is saved or logged, and web and MCP tools ask you every time.
-- **Use Manual mode.** Every shell command asks you first. Edit mode is the least you should use.
-- **Turn off MCP servers you do not need** (`/mcp disable <name>`). MCP tools are not limited to the workspace.
-
-**2. Write the block list**
-
-`.gitignore` and the other ignore files only hide paths from searches; the model can still read a file when it knows the path. Only `.solv/.ignore` blocks a path.
-
-- **Global list** (`.solv/.ignore` next to the program): what must never be read in any project, for example keys and env files.
-- **Workspace list** (`.solv/.ignore` in the project): this project's NDA folders. It adds to the global list; a `!` rule here cannot un-block a global rule.
-- **Block whole folders, not single files.** A new file in a blocked folder is blocked at once; a file you forgot to list is readable.
-- **Block copies of the content too:** exports, build output, caches, logs and backups that hold the same data (for example Unity's `Library/`, which is only skipped, not blocked, by `.gitignore`).
-- **Block documents by type** in shared folders: solv reads the text of `.pdf`, `.docx`, `.xlsx`, `.odt` and `.ods` files.
-- **Check the start-up lines.** solv names a line in `.solv/.ignore` that is not a valid pattern.
-
-Example workspace `.solv/.ignore`:
-
-```gitignore
-ClientX/
-Contracts/
-Exports/
-Library/
-*.pdf
-*.docx
-```
-
-Global `.solv/.ignore`:
-
-```gitignore
-*.pem
-*.key
-.env*
-secrets/
-```
-
-**3. Test it**
-
-- Type `@` and the start of a blocked path: it must not show in the list.
-- Ask the model to list or search a blocked folder, and to read one file in it by its full path. Each must be refused.
-- Changes to `.solv/.ignore` apply at once, without a restart.
-
-**4. Know the limits**
-
-- **Shell commands** can reach a blocked file in ways solv cannot see (wildcards, variables, scripts). A command that names a blocked path asks you first, but read every command before you allow it.
-- **A file the model read before you blocked it** stays in the conversation. Use `/reset` to drop it.
-- **Memories** the model saved stay in `.solv/memory`, also with `private` on. Check them with "what do you remember?".
+**Small models can break in long agentic loops** (seen with LFM2.5-8B-A1B, ~1B active): they stop calling tools and write the plan as JSON text, copy that reply afterwards, or repeat a failing command. Keep one small task per session, and `/reset` when it happens; don't argue it out of the loop.
 
 [↑ Back to contents](#contents)
 
@@ -709,9 +557,3 @@ Third-party licences: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 Copyright (c) 2026 Jovian Industries. All rights reserved. Freeware for personal or business use. No selling, no
 modification. Share only the unchanged official zip, free of charge. Full terms in [LICENSE](LICENSE).
-
-## Screenshots
-
-![Startup header, session modes, /help and the model reading a project](docs/tools.png)
-
-![The model editing several files, each change shown as a coloured diff](docs/edit-diff.png)
