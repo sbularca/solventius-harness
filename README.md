@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.png" alt="Solventius Harness logo" width="160"></p>
+
 # Solventius Harness
 
 > **Freeware.** Free to use, at home or at work. No selling, no modifying. See [LICENSE](LICENSE).
@@ -12,14 +14,27 @@ Pack it on a stick with llama.cpp and a small <=9B model configured to run on CP
 - **Little setup:** the first start finds your local server or takes an API key. It detects the server type, lists the models and reads their context size.
 - **No cloud account needed.**
 
-It does not include a model. It started as a learning project and became a tool I use every day. Inspired by pi.dev, with
-game development tools in mind for later. The source code may follow; for now this repository holds the releases.
+It does not include a model. It started as a learning project and became a tool I use every day. It began inspired by pi.dev's
+minimal approach, then grew a full tool set and the everyday comforts Claude Code users will find familiar: session modes,
+slash commands, skills, sub-agents, MCP servers and plan mode. It is tested on real game development work. The source code may follow; for now this repository holds the releases.
 
 **Features**
+
+<details>
+<summary>Show</summary>
 
 - **File tools:** read, list, search, find by pattern, create, edit and delete files in the workspace.
 - **Shell commands:** PowerShell on Windows, `/bin/sh` elsewhere, after you allow them.
 - **Session modes:** from asking before every change to running everything.
+- **Safe for NDA work:** block folders and files from the model with `.solv/.ignore`, and turn on `private` so nothing is saved or logged. See [Working with NDA files](#working-with-nda-files).
+- **Plan mode:** the model plans a large change first and shows you the plan; you approve it and pick the mode to build it in.
+- **Sub-agents:** the model hands self-contained tasks to helpers that run in the background, several at once, while you keep working.
+- **MCP servers:** connect apps like Unity, Figma or Blender and the model uses their tools. `/mcp add` sets one up.
+- **Sessions:** every conversation is saved; `/resume` picks one up again.
+- **Memory:** say "remember …" and solv keeps the fact for this project or for every project.
+- **Code review:** `/code-review` checks your changes for bugs and reports only findings it has verified.
+- **Scheduled prompts:** `/loop` repeats a prompt or a command while solv is open.
+- **Image generation:** with an image model on your server, the model makes placeholders, sprites and icons.
 - **Many servers:** llama.cpp, llama-swap, Ollama, LM Studio, vLLM, any OpenAI-compatible server, plus Claude, Gemini and OpenAI.
 - **Images:** drag and drop an image on the terminal or the web UI, or paste it or name its path, for vision models.
 - **Documents:** reads the text of PDF, Word (`.docx`), Excel (`.xlsx`) and OpenDocument (`.odt`, `.ods`) files, by `read_file` or drag and drop.
@@ -27,7 +42,9 @@ game development tools in mind for later. The source code may follow; for now th
 - **Web:** search with your own search server, and read web pages.
 - **Web UI:** the same session in a browser, also from your phone.
 - **Project rules:** an `AGENTS.md` in the project, plus one for all projects.
-- **[herdr](https://herdr.dev) support:** in a herdr pane it reports idle, working or blocked. Nothing to set up.
+- **[herdr](https://herdr.dev) support:** in a herdr pane it reports idle, working or blocked, and the agent name shows the workspace folder. Nothing to set up.
+
+</details>
 
 ## Quick install
 
@@ -58,11 +75,15 @@ See what changed in the [changelog](CHANGELOG.md).
 - [Web UI](#web-ui)
 - [Tools](#tools)
 - [MCP servers](#mcp-servers)
+- [Working with NDA files](#working-with-nda-files)
 - [Troubleshooting](#troubleshooting)
 - [Exceptions](#exceptions)
 - [Roadmap](#roadmap)
 
 ## Requirements
+
+<details>
+<summary>Show</summary>
 
 - Windows x64, Linux x64, or macOS (arm64 / x64, untested). No .NET install needed.
 - A model server whose model supports **tool calling** (others can only chat), or an API key for
@@ -80,7 +101,12 @@ See what changed in the [changelog](CHANGELOG.md).
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## Install
+
+<details>
+<summary>Show</summary>
 
 **One command** (installs the latest release, checks its SHA-256, adds it to `PATH`; run it again to update):
 
@@ -110,7 +136,7 @@ curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/in
 
 1. Download the zip for your system from the [releases page](https://github.com/sbularca/solventius-harness/releases/latest).
 2. Unzip it, for example into `C:\solv` or `~/solv`.
-3. Linux / macOS: run `chmod +x solv`. macOS, if blocked: `xattr -d com.apple.quarantine solv`.
+3. Linux / macOS: run `chmod +x solv`. macOS, if blocked: `xattr -d com.apple.quarantine solv`, then `codesign --force --sign - solv` (the download is not signed; Apple Silicon stops unsigned programs).
 4. Check it: `solv --selftest`. Every line must say `PASS` or `SKIP`.
 5. Add the **folder** to `PATH`. Don't copy or link the program: its settings live in the `.solv` folder next to it.
    - **Windows:** Start menu → *Edit environment variables for your account* → **Path** → **Edit…** → **New** → `C:\solv`.
@@ -120,7 +146,12 @@ curl -fsSL https://raw.githubusercontent.com/sbularca/solventius-harness/main/in
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## Configure
+
+<details>
+<summary>Show</summary>
 
 **First start:** start `solv`. A short setup runs when there is no `settings.json`:
 
@@ -236,6 +267,9 @@ All go inside `user_settings`.
 | `check_for_updates` | At start, tell you when a newer release is out. At most 20 checks a day; offline it stays quiet. | `true` |
 | `enable_logging` | Write a log file and a session transcript to `.solv/logs/`. Attach them to bug reports. | `false` |
 | `cleanup_period_days` | Delete saved sessions and logs not used for this many days, at start. `0` = keep forever. | `30` |
+| `save_sessions` | Save each conversation for `--resume` and `/resume`. `false` = nothing is saved to disk, and `/restart` starts empty. | `true` |
+| `private` | For files under NDA: web and MCP tools ask you first in every mode ("always" is not remembered for them), nothing is saved or logged (typed prompts included), and saved shell output is deleted at exit. | `false` |
+| `defer_tools_above` | With more MCP tools than this, the model gets their names only and loads what it needs. `0` = always send every tool in full. | `10` |
 | `sub_agents` | `false` = the model cannot start sub-agents. `/sub-agents on\|off` switches it. | `true` |
 | `mcp_servers` | MCP servers that give the model more tools. `/mcp add` or the web UI's MCP tab write it; see [MCP servers](#mcp-servers). | `{}` |
 | `image_model` | The image model for `generate_image`. Empty = found by itself (a model whose server lists image output). A model id = that model. `off` = no image tool. | `""` |
@@ -243,7 +277,12 @@ All go inside `user_settings`.
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## Run
+
+<details>
+<summary>Show</summary>
 
 Open a terminal **in your project folder** and type `solv`. That folder is the workspace.
 
@@ -265,6 +304,7 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/mcp [add\|retry\|remove\|disable\|enable\|tools]` | MCP servers: list them · set one up · connect again · remove one · turn one off or on (keeps its settings) · list its tools. |
 | `/agent-log [n]` | Open a sub-agent's live log in a new window (its tool calls and results as they happen). No number lists the logs. |
 | `/btw <question>` | Ask a side question. The answer shows above the input and is not added to the conversation. Works while it works too. |
+| `/loop [interval] <prompt>` | Repeat a prompt or a command while solv is open: every interval (`10m`), or the model picks each delay. `/loop stop` ends it. |
 | `/skills` | List the skills and whether each is loaded. |
 | `/<skill-name> [text]` | Load a skill and send it with your text. A built-in command with the same name wins. |
 | `/set-workspace <folder>` | Work in another folder, with a fresh conversation. |
@@ -275,6 +315,8 @@ Open a terminal **in your project folder** and type `solv`. That folder is the w
 | `/restart` | Restart solv and continue this conversation (for example after `/update`). |
 | `/revoke <n\|tool\|all>` | Ask again before a tool or command allowed with `a`. |
 | `/resume [n\|id]` | List the saved conversations, or switch to one. `/continue` switches to the most recent. |
+| `/delete-session <n\|id>` | Delete a saved conversation (not the open one). |
+| `/save-defaults` | Start with the current model and session mode next time (`Full` is never saved). |
 | `/reset`, `/help`, `/exit` | Fresh conversation (also clears the `a` approvals) · all commands · quit (shows how to resume). |
 
 **Arguments:** `--resume [id]` (no id: list saved conversations), `--continue` (the most recent), `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update [nightly]`, `--help`.
@@ -358,11 +400,16 @@ Works with local servers, Gemini, Claude and OpenAI. `"vision": false` in `user_
 
 ### herdr
 
-In a [herdr](https://herdr.dev) pane the harness reports **idle**, **working** or **blocked**. Nothing to set up.
+In a [herdr](https://herdr.dev) pane the harness reports **idle**, **working** or **blocked**. The agent name shows the workspace folder (`solv · myproject`) and follows `/set-workspace`; a herdr restart opens solv in that workspace. Nothing to set up.
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## Skills
+
+<details>
+<summary>Show</summary>
 
 A skill is a set of instructions the model loads only when it needs them. It adds no new tools.
 
@@ -372,7 +419,7 @@ A skill is a set of instructions the model loads only when it needs them. It add
 
    | Folder | Applies to |
    |---|---|
-   | `.agents/skills/<folder>/` in the workspace | This project. Wins on the same name. |
+   | `.agents/skills/<folder>/` in the workspace | This project. Wins on the same name; solv shows a warning when it hides another skill. |
    | `.solv/skills/<folder>/` next to the program | Every project. |
 
 2. Start `SKILL.md` with a `name` and a `description` between two `---` lines. The instructions follow:
@@ -399,6 +446,7 @@ A skill is a set of instructions the model loads only when it needs them. It add
 | `skill-creator` | The model writes or improves a skill. Ask "make a skill for writing release notes". |
 | `handoff` | The model writes `HANDOFF.md` in the workspace, so a fresh session can continue the work. Type `/handoff [what the next session is for]`. It replaces an old `HANDOFF.md`. |
 | `init` | The model explores the workspace and writes a short `AGENTS.md`: build and test commands, layout, code rules. Type `/init [extra wishes]`. It asks before changing an existing file. |
+| `code-review` | The model reviews your uncommitted changes (or a branch, commit or path you name) for bugs, checks each finding before it reports it, and changes no file. Type `/code-review [what to review]`. |
 
 A skill of yours with the same name replaces a built-in one.
 
@@ -419,7 +467,12 @@ A skill of yours with the same name replaces a built-in one.
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## Web UI
+
+<details>
+<summary>Show</summary>
 
 Use the same session from a browser: on this computer, a laptop on the LAN, or your phone over Tailscale. Type, attach
 files and images (📎, drop or paste), allow tools, switch model and mode, steer, ask `/btw`, and stop an answer from
@@ -448,7 +501,12 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## Tools
+
+<details>
+<summary>Show</summary>
 
 | Tool | Does |
 |---|---|
@@ -458,10 +516,16 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 | `create_file`, `edit_file` | Create a file, replace text in a file. |
 | `delete_file_or_folder` | Delete. Never the workspace itself. |
 | `generate_image` | Make images (placeholders, sprites, icons) with your image model. Saved in `.solv/images/`; a copy goes where you say. Only there when an image model is found or set. |
-| `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere. 120 s timeout. Long output is saved to `.solv/temp/`, except in Plan mode. |
+| `run_shell` | PowerShell on Windows, `/bin/sh` elsewhere. 120 s timeout (the model can set up to 600 s). Long output is saved to `.solv/temp/`, except in Plan mode. |
 | `web_search` | Search the web (optional, see [Web search](#web-search-optional)). |
 | `web_fetch` | Read one public web page as text. Refuses local and private addresses, and does not use a system proxy. |
 | `ask_user_question` | Ask you one question with 2 to 4 options. Type a number or your own answer; an empty reply or `skip` skips it. |
+| `report_findings` | Show the findings of a code review or another check as a table. |
+| `tool_search` | When MCP servers add more than 10 tools (setting `defer_tools_above`), the model sees their names and loads only the ones it needs. Rarely used tools such as `cron` are always loaded this way. |
+| `cron` | Schedule prompts with a cron expression while solv is open (create, list, delete). |
+| `schedule_wakeup` | During a `/loop` without an interval: run the loop prompt again in 60 s to 1 h, or stop the loop. |
+| `enter_plan_mode` | Ask you to switch to Plan mode before a large or unclear change. |
+| `exit_plan_mode` | Show you the finished plan: approve it and pick the mode to build it in, or say what to change. |
 | `spawn_agent` | Hand a self-contained task to a sub-agent with its own empty context. Sub-agents run in the background, several at once, while you keep working; each summary comes back as a message when it is done. When one starts, solv asks once whether it may do things that need your approval. You can name a model for the task. A model on the same machine as the active one asks first. Alt+Shift+1…9 stops it; Alt+1…9 opens its live log. |
 | `memory` | Remember facts across sessions. Say "remember …" and whether it is **global** (every workspace) or for **this workspace**; if you don't say, solv asks. Kept in small files in `.solv/memory`; solv sees only the titles until one fits the task. "Forget …" removes one. |
 | `use_skill` | Load a skill, or read one of its extra files. Only there when skills exist. |
@@ -473,18 +537,26 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 - Without any of these files, `bin`, `obj`, `node_modules`, `dist`, `build` and similar folders are skipped.
 - `.git`, `.hg`, `.svn`, `.plastic` and `.solv` are always skipped.
 - A skipped folder is still searched when the model gives it as the path. Search results name the folders they skipped.
-- Not read yet: ignore files in subfolders, git's global ignore file.
+- They also follow `.gitignore`, `.ignore` and `.rgignore` files in subfolders, for example in each repo of a folder of repos. A `!` rule in a subfolder brings back what a higher folder skipped.
+- `grep` uses `rg` (ripgrep) when it is installed, for speed; the results are the same. After an update, solv offers to install it when it is missing.
+- Not read: git's global ignore file.
 
 **Block folders or files from the model.** Create `.solv/.ignore` in the workspace (this project) or next to the program (all projects):
 
 - It uses `.gitignore` rules, one per line, for example `secrets/` or `*.pem`.
 - A matching path is hidden from searches and listings, and every file tool refuses to read or write it.
 - The model cannot read or change the workspace `.solv/.ignore`. Both files are optional; solv never creates them.
-- `run_shell` is not blocked, so the model could still `cat` a file. After a refused path, the next `run_shell` asks you first.
+- `run_shell` cannot be fully blocked: a shell command can reach a file in ways solv cannot see. A command that names a blocked path (`cat secrets/a.txt`) asks you first in every mode, and so does the next command after a refused path.
+- **For files under NDA:** see [Working with NDA files](#working-with-nda-files).
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## Troubleshooting
+
+<details>
+<summary>Show</summary>
 
 | Symptom | Fix |
 |---|---|
@@ -505,7 +577,12 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## Exceptions
+
+<details>
+<summary>Show</summary>
 
 **Some small models cannot sustain long agentic loops.** They work for short tasks, but in a long session they eventually fail. Seen with LFM2.5-8B-A1B (about 1B active parameters):
 
@@ -520,7 +597,12 @@ until you click ✕, OK, Save or Cancel. **⇔** in the header switches between 
 
 [↑ Back to contents](#contents)
 
+</details>
+
 ## MCP servers
+
+<details>
+<summary>Show</summary>
 
 Connect apps with a built-in MCP server (Unity, Figma desktop, Blender, …) or programs like `npx` / `uvx` packages, and the model can use their tools.
 
@@ -536,6 +618,69 @@ Connect apps with a built-in MCP server (Unity, Figma desktop, Blender, …) or 
 
 [↑ Back to contents](#contents)
 
+</details>
+
+## Working with NDA files
+
+<details>
+<summary>Show</summary>
+
+How to keep files under NDA away from the model. No setup protects everything; this gets as close as solv can.
+
+**1. Set up the session**
+
+- **Any model works.** The block list and `private` protect the same way with local and cloud models: a blocked file is never read, so it is never sent. With a cloud model, the files the model is allowed to read go to the provider; with a local model, nothing leaves your machine.
+- **Set `private` to `true`.** Nothing is saved or logged, and web and MCP tools ask you every time.
+- **Use Manual mode.** Every shell command asks you first. Edit mode is the least you should use.
+- **Turn off MCP servers you do not need** (`/mcp disable <name>`). MCP tools are not limited to the workspace.
+
+**2. Write the block list**
+
+`.gitignore` and the other ignore files only hide paths from searches; the model can still read a file when it knows the path. Only `.solv/.ignore` blocks a path.
+
+- **Global list** (`.solv/.ignore` next to the program): what must never be read in any project, for example keys and env files.
+- **Workspace list** (`.solv/.ignore` in the project): this project's NDA folders. It adds to the global list; a `!` rule here cannot un-block a global rule.
+- **Block whole folders, not single files.** A new file in a blocked folder is blocked at once; a file you forgot to list is readable.
+- **Block copies of the content too:** exports, build output, caches, logs and backups that hold the same data (for example Unity's `Library/`, which is only skipped, not blocked, by `.gitignore`).
+- **Block documents by type** in shared folders: solv reads the text of `.pdf`, `.docx`, `.xlsx`, `.odt` and `.ods` files.
+- **Check the start-up lines.** solv names a line in `.solv/.ignore` that is not a valid pattern.
+
+Example workspace `.solv/.ignore`:
+
+```gitignore
+ClientX/
+Contracts/
+Exports/
+Library/
+*.pdf
+*.docx
+```
+
+Global `.solv/.ignore`:
+
+```gitignore
+*.pem
+*.key
+.env*
+secrets/
+```
+
+**3. Test it**
+
+- Type `@` and the start of a blocked path: it must not show in the list.
+- Ask the model to list or search a blocked folder, and to read one file in it by its full path. Each must be refused.
+- Changes to `.solv/.ignore` apply at once, without a restart.
+
+**4. Know the limits**
+
+- **Shell commands** can reach a blocked file in ways solv cannot see (wildcards, variables, scripts). A command that names a blocked path asks you first, but read every command before you allow it.
+- **A file the model read before you blocked it** stays in the conversation. Use `/reset` to drop it.
+- **Memories** the model saved stay in `.solv/memory`, also with `private` on. Check them with "what do you remember?".
+
+[↑ Back to contents](#contents)
+
+</details>
+
 ## Roadmap
 
 Roughly in this order. No dates; plans change.
@@ -543,7 +688,6 @@ Roughly in this order. No dates; plans change.
 **Next**
 
 - **Bundled local model:** start without a model server or an API key.
-- **Speed:** read-only tools (reads, searches, web pages) run at the same time.
 - **Native builds on Linux and macOS:** faster start-up and a smaller footprint, as on Windows already.
 
 [↑ Back to contents](#contents)
