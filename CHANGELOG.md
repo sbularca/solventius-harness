@@ -5,6 +5,75 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-11-26
+
+### Added
+- In herdr, the agent name shows the workspace folder (`solv · testbed`) and follows `/set-workspace`. After a workspace change, a herdr restart opens solv in the new workspace (also in Private mode).
+- `/delete-session <number|id>` deletes a saved conversation (also in the web menu).
+- `/save-defaults` keeps the current model and session mode for the next start (`Full` is never saved).
+- `/loop [interval] <prompt>` repeats a prompt or a `/command` while solv is open, every interval or at a delay the model picks. A new `cron` tool lets the model schedule prompts with a cron expression in the session.
+- With more than 10 MCP tools, solv sends their names only; the model loads the tools it needs with `tool_search`. This keeps requests small for local models.
+- The model can ask to switch to Plan mode before a big change (`enter_plan_mode`), and shows you its plan for approval when it is ready (`exit_plan_mode`): approve with Edit, Auto or Manual mode, or type what to change. Approved plans are saved to `.solv/plans/` in the workspace.
+- Built-in skill `code-review`: `/code-review [branch|commit|path]` reviews your changes for bugs, checks each finding before it reports it, and changes no file.
+- Setting `context_use_note` (default `false`): an experiment for small local models; after tool calls the model sees how full its context is.
+- Setting `private` (default `false`), for files under NDA: web and MCP tools ask you first in every mode, conversations are not saved, no logs are written, and saved shell output is deleted at exit. Also in the web Settings (Safety tab).
+- Setting `save_sessions` (default `true`): set it to `false` and conversations are not saved to disk.
+- Setting `defer_tools_above` (default `10`): how many MCP tools solv sends in full before it switches to names only and `tool_search`. `0` = always send every tool in full.
+- New `report_findings` tool: code reviews (and other checks) show their findings as a table instead of plain text.
+- After an update, if `rg` (ripgrep) is missing, solv offers to install it (winget on Windows, Homebrew on macOS) or tells you how.
+- The web UI shows the solv logo as its browser tab icon.
+
+### Changed
+- The `cron` tool is no longer sent in every request; the model loads it with `tool_search` when it needs it. This saves about 150 tokens per request.
+- A shell command that names a path from `.solv/.ignore` (for example `cat secrets/a.txt`) now asks you first in every mode, and the prompt names the path. It is a check of the command text, not a lock: wildcards or scripts can get past it.
+- `/restart` with `save_sessions` off now says that the new solv starts with an empty conversation.
+- Sub-agents can take up to 500 steps, the same as the main conversation (it was 30 or 60), so long reviews and searches finish their work.
+- The `cron` and `schedule_wakeup` tools no longer accept a /command; only you can schedule commands with `/loop`. A prompt the model schedules is not treated as your message: it attaches no images and does not change what the shell classifier treats as your request.
+- When a request to the model fails in the middle of a turn, the steps so far are kept (as with Esc) and the model is told; before, the whole turn was removed while its file changes stayed.
+- With `private` on, the prompts you type are no longer saved to `.solv/history.txt` (Up still recalls them in the running session).
+- A recursive `delete_file_or_folder` refuses a folder that holds a blocked path, the block list `.solv/.ignore` itself, or a `.git` folder.
+- A workspace `.solv/.ignore` can no longer un-block (`!pattern`) what the global block list blocks; a path is blocked when either list blocks it.
+- A path you paste or drop into the input line is not attached when `.solv/.ignore` blocks it.
+- A line in `.solv/.ignore` that is not a valid pattern is now reported at start; a pattern that takes too long to check now blocks the path instead of letting it through.
+- With `private` on, an "always" answer is no longer remembered for tools that send data out (web, MCP); they ask every time.
+- An "always" answer to the sub-agent start prompt now holds only in the session mode where you gave it.
+- A workspace skill with the same name as a built-in or global skill now shows a warning at start.
+- Command names ignore case: `/Help` works like `/help`.
+- A `run_shell` timeout above 600 seconds is capped at 600 instead of failing.
+- The web settings window saves only while solv waits for your message; during a turn it asks you to wait or press Stop.
+
+### Fixed
+- `/restart` (also from the web UI) keeps the workspace set with `/set-workspace`, also in Private mode. Before, solv came back in the old folder.
+- `/mcp disable` and `/mcp retry` no longer freeze solv for up to two minutes while the server is still connecting (for example Unity's relay with the editor closed). `/mcp enable` waits at most 10 seconds, then says the server is still connecting and reports the result later.
+- `grep`, `glob`, `list_dir` and `@` completion now follow `.gitignore` files in subfolders (for example each repo inside a folder of repos), so Unity `Library/` folders and similar are skipped. A `!` rule in a subfolder brings back a file a higher folder skipped. `grep` over a big folder of repos no longer stops at its 10-second limit.
+- `grep` is faster: it reads files in parallel, skips images, archives and other binary types without opening them, and uses `rg` (ripgrep) when it is installed.
+- When `grep` stops at its time limit, the result now says plainly that it is incomplete, so "no matches" is not read as final.
+- Two backends that serve a model with the same id now show a warning that names both; before, the second one was hidden silently.
+- A turn that fails and is rolled back no longer forgets the skills loaded in earlier turns.
+- Long sub-agent runs often ended with no result: at the step or context limit the model wrote what it would check next, or spent the whole answer on thinking. Sub-agents now get a "write your answer soon" note near the limit, and their last answer is written without thinking.
+- Sub-agents now follow a model's `max_tokens` from `user_models` (it was ignored, so they always got the server's default).
+- Compaction no longer deletes older turns when the summary request fails for a reason other than "too long" (for example an expired key, no credit, or an unloaded model). The history stays as it was and the error is shown.
+- `edit_file` no longer damages files that are not UTF-8: a file with a byte order mark (UTF-16, UTF-32) is edited and written back in its own encoding, and a file that is not UTF-8 (for example Windows-1252) is refused unchanged. Before, every non-ASCII character in it was replaced.
+- Scheduled jobs (`/loop`, `cron`, wake-ups) never ran in a `--web-only` session or with redirected output. Now the first `/loop` run starts at once, and a job that comes due later runs right after your next message there; `/loop` and the tools say so.
+- A `--web-only` session no longer writes the conversation and the web token to `.solv/temp/web-<pid>.log`; the log keeps only the start-up and is deleted once the web UI runs.
+- Control characters and escape sequences in tool arguments are shown as visible symbols in approval prompts and the tool line, so a command cannot hide part of itself.
+- The web file viewer no longer looks up a raw link path (for example a network share) before checking that it is in the workspace.
+- An unexpected error during a turn no longer closes solv: it is shown, the turn so far is kept and saved, and you can continue.
+- A shell command such as `git show main:secrets/key.pem` now asks first when the path after the colon is blocked by `.solv/.ignore`.
+- `/resume <number>` and `/delete-session <number>` use the list you last saw, so a session saved in between no longer shifts the numbers.
+- When the key test in `/setup` fails or you cancel it, the previous key is kept. After `/setup`, the active model uses the new key at once.
+- Two open solv windows no longer overwrite each other's changes to `settings.json` (for example `/model` in one and `/thinking` in the other).
+- The conversation is saved after every tool round, so a crash or power loss keeps the work of the current turn.
+- A reply that still asks for tools at the tool limit no longer breaks the next request.
+- Stop now works when an MCP server stops reading its input.
+- A memory whose text has a line starting with `## ` no longer splits into two memories.
+- Very large `.ods` sheets (for example many repeated empty cells) no longer use all memory; the text is cut with a note.
+- Esc now stops `read_file` on a large document at once.
+- A `!command` that cannot start shows an error instead of an unexpected-error message.
+- `web_search` shows a clear error when the search server answers with an HTTP error or with a page that is not JSON.
+- Web UI: a link whose text is inline code now shows the text; an image larger than 32 MB is refused instead of loading; a tool call with unexpected arguments still shows its box; Stop in the browser now ends a confirm prompt that waits in the terminal.
+- `!solv --list-sessions` inside a `--web-only` session now prints the list instead of starting a hidden session.
+
 ## [0.17.0] - 2026-11-24
 
 ### Added
@@ -535,3 +604,4 @@ First public demo build.
 [0.16.4]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.4
 [0.16.6]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.6
 [0.17.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.17.0
+[0.18.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.18.0
