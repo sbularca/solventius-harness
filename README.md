@@ -178,7 +178,7 @@ The setup writes this. A default `settings.json` lists Gemini, Claude and OpenAI
 | `compact_at` | Compact at this prompt size (tokens). Default: 95 % of the usable context. Caps the cost per request on cloud models. |
 
 - Each server gets 5 s to answer at start; all their models show in `/model`.
-- `user_models` overrides `context_size`, `max_tokens`, `compact_at`, `vision` or `parallel_tool_calls` per model, or adds an unlisted one: `"user_models": [{ "id": "qwen3:8b", "context_size": 32768 }]`.
+- `user_models` overrides `context_size`, `max_tokens`, `compact_at`, `vision`, `parallel_tool_calls` or `stream` per model, or adds an unlisted one: `"user_models": [{ "id": "qwen3:8b", "context_size": 32768 }]`.
 - A large `max_tokens` is fine: solv lowers it per request so the answer fits (at most 1/8 of the context is kept free).
 - HTTP 429 / 503: up to 3 retries, **Esc** stops the wait. A daily quota or a wait over 60 s gives a message at once.
 
@@ -217,6 +217,7 @@ All inside `user_settings`.
 | `request_timeout` | Seconds to wait for one answer. | `600` |
 | `classifier_model` | Model for side jobs: checks Auto-mode shell commands; a separate model also writes session titles and checks a reply's commands in parallel. Empty = the chat model, `off` = every non-read-only command asks. Falls back to the chat model with one warning. On a one-slot local server, use two slots or another server to keep the prompt cache. Old name: `shell_judge_model`. | `""` |
 | `batch_tool_calls` | Ask the model to batch independent reads and searches. Turned off per model if the server rejects `parallel_tool_calls`. | `true` |
+| `stream` | Show the answer while the model writes it; Esc keeps the text so far. `false` = wait for the whole answer. Also per model in `user_models`. | `true` |
 | `system_prompt` | Instructions at the start of every conversation. | `You are a terse AI assistant` |
 | `show_reasoning` | Show the model's thinking. | `false` |
 | `show_tool_response` | Show each tool result. | `false` |
@@ -240,7 +241,7 @@ All inside `user_settings`.
 <details>
 <summary>Show</summary>
 
-Run `solv` **in your project folder**; that folder is the workspace. The prompt shows mode and model. After each answer, a line shows time, tokens, context use, steps, tool calls, and model / tool time. Near the limit it compacts: old tool results become notes, older turns a summary, the last 2 turns stay.
+Run `solv` **in your project folder**; that folder is the workspace. The prompt shows mode and model. The answer appears while the model writes it; finished paragraphs print at once, the busy line shows the speed (`Writing · 24 tok/s`). After each answer, a line shows time, tokens, context use, steps, tool calls, and model / tool time. Near the limit it compacts: old tool results become notes, older turns a summary, the last 2 turns stay.
 
 | Command | Effect |
 |---|---|
