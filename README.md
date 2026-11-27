@@ -316,7 +316,7 @@ Drop, paste (**Ctrl+V / Alt+V**, or 📎 in the web UI) or name a png, jpg, webp
 
 ### Project rules
 
-`AGENTS.md` in the workspace (this project, wins) and `.solv/AGENTS.md` next to the program (every project). Read at start and after `/reset`, `/set-workspace` or a model switch. Limit 40,000 characters together, less on small models (~13,000 at 32k); a long project file is cut, a global one over the limit skipped. `HANDOFF.md` is read at start too.
+`AGENTS.md` in the workspace (this project, wins) and `.solv/AGENTS.md` next to the program (every project). A project file can also live in the workspace's `.solv/AGENTS.md`, easy to ignore in git; both load, the root one wins. Read at start and after `/reset`, `/set-workspace` or a model switch. Limit 40,000 characters together, less on small models (~13,000 at 32k); a long project file is cut, a global one over the limit skipped. `.solv/HANDOFF.md` is read at start too.
 
 ### herdr
 
@@ -347,8 +347,8 @@ The model loads it when your request matches the description; small models often
 |---|---|
 | `solv-guide` | Answers questions about solv: commands, modes, skills, settings. |
 | `skill-creator` | Writes or improves a skill. |
-| `handoff` | `/handoff [goal]` writes `HANDOFF.md` so a fresh session continues the work; loaded once at the next start. |
-| `init` | `/init [wishes]` writes a short `AGENTS.md` (build, test, layout, rules); asks before changing one. |
+| `handoff` | `/handoff [goal]` writes `.solv/HANDOFF.md` so a fresh session continues the work; loaded once at the next start. |
+| `init` | `/init [wishes]` writes a short `AGENTS.md` (`/init .solv` writes `.solv/AGENTS.md`) (build, test, layout, rules); asks before changing one. |
 | `code-review` | `/code-review [branch\|commit\|path]` reviews changes, verifies each finding, changes no file. |
 
 A skill of yours with the same name replaces a built-in one.
