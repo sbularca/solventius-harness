@@ -5,6 +5,25 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-11-27
+
+### Added
+- Answers stream: you see the model's answer while it is written. The terminal prints each finished paragraph, list or code block at once and shows the unfinished part above the input; the web UI shows a live reply. The busy line shows "Writing · N tok/s", or "Writing edit_file · 3.2k chars" while the model writes a tool call. Esc keeps the text so far, marked "(stopped)". Works with every local server, Gemini, Anthropic and OpenAI. Turn it off with `"stream": false` (also per model in `user_models`).
+- `/model set [id] field=value` changes a model's settings (`context_size`, `max_tokens`, `compact_at`, `vision`, ...) from inside solv, and `/model unset` removes them. No id = the current model; Tab completes the model and the fields with their current values. Used from your next message, no restart.
+
+- Session mode **Restricted**, for workspaces with private files: like Auto, but the model has no `run_shell`, no MCP tools and cannot ask to change the mode, so nothing can read what `.solv/.ignore` blocks. Writes to memory, skills, `AGENTS.md` and `HANDOFF.md` ask first, `!command` asks first, and leaving the mode stops its `/loop` and `cron` jobs. Switch with `/session-mode restricted` or set `"default_session_mode": "Restricted"`; Shift+Tab does not leave it.
+
+### Changed
+- With `show_reasoning: true` the model's thinking streams: each finished paragraph prints at once (grey, marked ✻) and the unfinished part shows above the input. Before, the whole reasoning box appeared only when the answer started. With `false` you still see one live line and `✻ thought · N chars`. The web UI keeps its one live line.
+- Backend `type` accepts `openai-compatible` as another name for `generic`. `openai` stays for api.openai.com only; the docs and the unknown-type warning now say so.
+
+### Fixed
+- Ask to see a file ("show me the content of a.cs") and the whole file shows in the terminal; before, only the first 12 lines showed and the model did not repeat the rest. The model marks these reads with `read_file`'s new `show` argument.
+- `!command` output shows in full; before, only the first 12 lines showed.
+- Ctrl+O shows every tool result in full; before, it also stopped after 12 lines.
+- OpenAI-compatible cloud services that solv does not recognise (for example Berget.ai) now list their models. Before, solv showed "could not be detected" and no models. An endpoint that ends in `/v1` (as most providers document it) now works too; before, solv asked for `/v1/v1/...`.
+- Embedding, rerank and speech-to-text models no longer appear in `/model` when the server marks them with `model_type` (Berget.ai does).
+
 ## [0.18.0] - 2026-11-26
 
 ### Added
@@ -605,3 +624,4 @@ First public demo build.
 [0.16.6]: https://github.com/sbularca/solventius-harness/releases/tag/v0.16.6
 [0.17.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.17.0
 [0.18.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.18.0
+[0.19.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.19.0
