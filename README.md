@@ -172,7 +172,7 @@ The setup writes this. A default `settings.json` lists Gemini, Claude and OpenAI
 |---|---|
 | `endpoint` | The server's root address, ending with `/`. |
 | `id` | Optional name, shown in `/model` and the prompt. |
-| `type` | Optional, skips detection: `llama-swap`, `llama.cpp`, `ollama`, `lmstudio`, `vllm`, `ninfer`, `gemini`, `anthropic`, `openai`, `generic`. |
+| `type` | Optional, skips detection: `llama-swap`, `llama.cpp`, `ollama`, `lmstudio`, `vllm`, `ninfer`, `gemini`, `anthropic`, `openai`, `generic`. `openai` is api.openai.com only; for any other OpenAI-compatible service use `generic` (or `openai-compatible`). |
 | `api_key_env` | The **name** of the environment variable with the key. Never the key itself. |
 | `key_command` | A command that prints the key (password manager, e.g. `op read op://Private/gemini/credential`). Runs once per session, within 15 s. |
 | `compact_at` | Compact at this prompt size (tokens). Default: 95 % of the usable context. Caps the cost per request on cloud models. |
@@ -246,6 +246,7 @@ Run `solv` **in your project folder**; that folder is the workspace. The prompt 
 | Command | Effect |
 |---|---|
 | `/model [n\|id]` | List models by server, or switch (kept for next start; waits for running sub-agents). |
+| `/model set [id] field=value` | Change a model's settings (`context_size`, `max_tokens`, `compact_at`, `vision`, ...) from inside solv. No id = the current model. Used from your next message, no restart. `/model unset [id] [field]` removes them. |
 | `/session-mode <mode>` | Change when it asks ([Session modes](#session-modes)). |
 | `/thinking <on\|off\|level\|reset>` | Thinking on/off or its level, per model. |
 | `/compact [focus]` | Compact now; the focus says what to keep. |
@@ -300,8 +301,10 @@ Conversations are saved in `.solv/history/` after each answer; `solv --resume <i
 | `Edit` | run | run | ask |
 | `Auto` (default) | run | run | run; the classifier asks you about risky commands |
 | `Full` | run | run | run, also outside the workspace |
+| `Restricted` | run | run; memory, skills, `AGENTS.md` ask | run; no shell, no MCP tools |
 
 - **Auto:** read-only commands (`git status`, `git diff`, `ls`, `pwd`, …) run. Others go to the classifier, which allows normal steps (builds, tests) and asks about deletes, installs, pushes, network access or anything unclear, with its reason. Auto trusts the model with the workspace; use `Edit` or `Manual` on untrusted projects.
+- **Restricted:** for private files listed in `.solv/.ignore`. No shell and no MCP tools, so nothing can read a blocked file; `!command` asks first. Leave it with `/session-mode`.
 - **Answers:** `y` once, `a` for the session (`run_shell`: that exact command), anything else refuses.
 - The model knows the mode and is told when it changes.
 
@@ -395,7 +398,7 @@ The same session in a browser, locally, on the LAN or on your phone over Tailsca
 
 | Tool | Does |
 |---|---|
-| `read_file` | Read a file, in parts sized to the context. Text of `.pdf`, `.docx`, `.xlsx`, `.odt`, `.ods`; other binaries and scanned PDFs refused. |
+| `read_file` | Read a file, in parts sized to the context. Text of `.pdf`, `.docx`, `.xlsx`, `.odt`, `.ods`; other binaries and scanned PDFs refused. Ask to see a file and it shows in full. |
 | `list_dir`, `grep`, `glob` | List, search, find by pattern (`**/*.cs`, newest first). |
 | `create_file`, `edit_file` | Create a file, replace text in a file. |
 | `delete_file_or_folder` | Delete. Never the workspace itself. |
