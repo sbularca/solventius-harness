@@ -76,7 +76,6 @@ Or **[download the latest release](https://github.com/sbularca/solventius-harnes
 - [Working with NDA files](#working-with-nda-files)
 - [Troubleshooting](#troubleshooting)
 - [Exceptions](#exceptions)
-- [Roadmap](#roadmap)
 
 ## Requirements
 
@@ -532,17 +531,6 @@ secrets/
 [↑ Back to contents](#contents)
 
 </details>
-
-## Roadmap
-
-Roughly in this order. No dates; plans change.
-
-**Next**
-
-- **Bundled local model:** start without a model server or an API key.
-- **Native builds on Linux and macOS:** faster start-up and a smaller footprint, as on Windows already.
-
-[↑ Back to contents](#contents)
 
 ## Built with
 
