@@ -5,6 +5,16 @@ Versions follow [Semantic Versioning](https://semver.org/); before 1.0 any relea
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-11-28
+
+### Added
+- Project instructions can live in the workspace's `.solv/AGENTS.md`, so one `.solv/` line in `.gitignore` hides them. Both files load; the root `AGENTS.md` wins.
+- `/init .solv` writes `.solv/AGENTS.md` instead of the root file. Tab completes `.solv`.
+- The sub-agent rows above the input line show how full the agent's context is (the same bar as the footer) and the tokens it has used so far.
+
+### Changed
+- `/handoff` writes `.solv/HANDOFF.md` instead of `HANDOFF.md` in the workspace root. An old root `HANDOFF.md` still loads.
+
 ## [0.19.0] - 2026-11-27
 
 ### Added
@@ -625,3 +635,4 @@ First public demo build.
 [0.17.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.17.0
 [0.18.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.18.0
 [0.19.0]: https://github.com/sbularca/solventius-harness/releases/tag/v0.19.0
+[0.19.1]: https://github.com/sbularca/solventius-harness/releases/tag/v0.19.1
