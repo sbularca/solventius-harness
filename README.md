@@ -268,7 +268,9 @@ Run `solv` **in your project folder**; that folder is the workspace. The prompt 
 | `/save-defaults` | Keep the current model and mode for the next start (`Full` never). |
 | `/reset`, `/help`, `/exit` | Fresh conversation (clears `a` approvals) · all commands · quit. |
 
-**Arguments:** `--resume [id]`, `--continue`, `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update [nightly]`, `--help`.
+**Arguments:** `--resume [id]`, `--continue`, `--model <n|id>`, `--workspace <dir>`, `--setup [target]`, `--web`, `--web-only`, `--list-sessions`, `--kill <id>`, `--selftest`, `--version`, `--update [nightly]`, `--help [headless|web|all]`.
+
+**Non-interactive runs** (scripts, CI, benchmarks): `solv --prompt "<task>" --approval <mode|allow-all>` runs one task without a person and exits: 0 done, 1 error, 2 a limit was reached. Anything that would ask is refused and the model is told; `allow-all` allows everything (use it only in a container). `--quiet` leaves only the answer on stdout, `--json <file>` writes the result with steps, times and tokens. Limits: `--max-steps` (500), `--timeout` (20 min), `--wall-timeout`. `--sub-agents` turns sub-agents on. All of it: `solv --help headless`.
 
 Conversations are saved in `.solv/history/` after each answer; `solv --resume <id>` continues one in its workspace.
 
